@@ -89,7 +89,13 @@ function bina2TaalimatNizam(talab: TalabTawlid): string {
 
   sutur.push(
     ``,
-    `اكتب محتوى أصيلاً لا يبدو آلياً. لا تستخدم عبارات مبتذلة. لا تكرّر الأفكار بين المنشورات.`,
+    `اكتب محتوى أصيلاً لا يبدو آلياً. لا تستخدم عبارات مبتذلة.`,
+    ``,
+    `قاعدة التنوّع الصارمة — كل منشور يجب أن يكون مختلفاً جذرياً عن الآخرين:`,
+    `- افتتاحيات مختلفة: سؤال، صدمة، قصة، إحصاء، اقتباس، تحدي — لا تتكرر.`,
+    `- بنى مختلفة: سرد / لائحة / سؤال وجواب / تحليل / مقارنة / نصائح سريعة.`,
+    `- زوايا مختلفة: مشكلة → حل، رأي، اكتشاف، نقد، فضفضة، فرصة.`,
+    `- لا تبدأ منشورين بنفس الأسلوب ولا تتشابه الجمل الأولى أبداً.`,
   );
 
   return sutur.join("\n");
@@ -100,16 +106,20 @@ function bina2TalabMustakhdim(talab: TalabTawlid, adad: number): string {
   const m = MANASSAT[talab.manassa];
   if (talab.mawdu && talab.mawdu.trim()) {
     return [
-      `وَلِّد ${adad} منشورات مختلفة حول الموضوع التالي، كلٌّ منها مستقلّ وجاهز للنشر على ${m.ism}:`,
+      `وَلِّد ${adad} منشورات حول الموضوع التالي، كلّ منها مختلف عن الآخر في البنية والزاوية:`,
       ``,
       `الموضوع: ${talab.mawdu.trim()}`,
+      ``,
+      `أعطني ${adad} زوايا مختلفة تماماً: مثلاً (تحليل + قصة + لائحة + رأي + إحصاء)،`,
+      `ولا تجعل افتتاحية أي منشور تشبه افتتاحية الآخر.`,
     ].join("\n");
   }
   // الموضوع الذاتي: يختار الوكيل أفكاراً بنفسه من مجاله ومعرفته.
   return [
-    `اختر بنفسك ${adad} أفكاراً طازجة وقيّمة من مجال تخصّصك ومعرفتك المرجعية،`,
-    `ثم وَلّد منشوراً مستقلّاً جاهزاً للنشر على ${m.ism} لكلّ فكرة.`,
-    `تجنّب الموضوعات المكرّرة، وابدأ كلّ منشور بزاوية مختلفة.`,
+    `اختر بنفسك ${adad} أفكاراً مختلفة جذرياً من مجال تخصّصك ومعرفتك المرجعية،`,
+    `ثم وَلّد لكل فكرة منشوراً مستقلّاً وجاهزاً للنشر على ${m.ism}.`,
+    `تأكّد أن كل منشور يختلف عن الآخر في: البنية، الزاوية، الافتتاحية، الطول التقريبي،`,
+    `والأسلوب. لا تكرّر نفس البنية أو نفس نمط الافتتاحية في منشورين متتاليين.`,
   ].join("\n");
 }
 
@@ -129,6 +139,44 @@ const MUKHATTAT_MUKHRAJAT = {
 /** يقصّ النصوص على الحد الأقصى للمنصّة كطبقة أمان أخيرة. */
 function hadDikat(manshurat: string[], hadAqsa: number): string[] {
   return manshurat.map((t) => (t.length > hadAqsa ? t.slice(0, hadAqsa) : t));
+}
+
+/**
+ * يعالج نصوص JSON الصادرة من النماذج ويصحّح escapes غير الصالحة
+ * قبل تمريرها إلى JSON.parse.
+ */
+function sannahMatnJson(raw: string): string {
+  // استخراج أول كائن JSON (بعض النماذج تغلفه بـ ```)
+  const m = raw.match(/\{[\s\S]*\}/);
+  if (!m) return raw;
+  let json = m[0];
+  // إصلاح escapes غير صالحة: \x → \\x, \a → \\a إلخ
+  json = json.replace(/\\([^"\\/bfnrtu])/g, "\\\\$1");
+  return json;
+}
+
+/** يحاول تحليل JSON ويُعيد المصفوفة أو مصفوفة فارغة. */
+function hallMatnJson(matn: string): string[] {
+  const nazif = sannahMatnJson(matn);
+  try {
+    const mufakkak = JSON.parse(nazif) as { manshurat?: string[] };
+    return mufakkak.manshurat ?? [];
+  } catch {
+    // محاولة أخيرة: استخراج النصوص داخل المصفوفة مباشرة
+    const bad = matn.match(/"manshurat"\s*:\s*\[([\s\S]*?)\]/);
+    if (bad) {
+      const kusul: string[] = [];
+      for (const q of bad[1].match(/"((?:[^"\\]|\\.)*)"/g) ?? []) {
+        try {
+          kusul.push(JSON.parse(q));
+        } catch {
+          kusul.push(q.replace(/^"|"$/g, ""));
+        }
+      }
+      return kusul;
+    }
+    return [];
+  }
 }
 
 // ── مزوّد OpenRouter (متوافق مع OpenAI) ─────────────────────
@@ -183,15 +231,8 @@ async function tawlidOpenRouter(
     throw new Error("[صَدَى/العقل] لم يُرجِع OpenRouter محتوى.");
   }
 
-  let mufakkak: { manshurat?: string[] };
-  try {
-    mufakkak = JSON.parse(matn) as { manshurat?: string[] };
-  } catch {
-    // بعض النماذج تُغلّف JSON بكتلة ```؛ نستخرج أوّل كائن.
-    const m2 = matn.match(/\{[\s\S]*\}/);
-    mufakkak = m2 ? (JSON.parse(m2[0]) as { manshurat?: string[] }) : {};
-  }
-  return hadDikat(mufakkak.manshurat ?? [], m.hadAqsa);
+  const manshurat = hallMatnJson(matn);
+  return hadDikat(manshurat, m.hadAqsa);
 }
 
 // ── مزوّد Bynara (OpenAI-compatible عبر router.bynara.id) ───
@@ -243,14 +284,8 @@ async function tawlidBynara(
     throw new Error("[صَدَى/العقل] لم يُرجِع Bynara محتوى.");
   }
 
-  let mufakkak: { manshurat?: string[] };
-  try {
-    mufakkak = JSON.parse(matn) as { manshurat?: string[] };
-  } catch {
-    const m2 = matn.match(/\{[\s\S]*\}/);
-    mufakkak = m2 ? (JSON.parse(m2[0]) as { manshurat?: string[] }) : {};
-  }
-  return hadDikat(mufakkak.manshurat ?? [], m.hadAqsa);
+  const manshurat = hallMatnJson(matn);
+  return hadDikat(manshurat, m.hadAqsa);
 }
 
 /**
