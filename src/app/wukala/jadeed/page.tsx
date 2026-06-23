@@ -90,9 +90,12 @@ export default function JadeedPage() {
           shakhsiyya: { nabra, uslub, lugha, rumuz },
         }),
       });
-      if (r.ok) router.push("/wukala");
       const data = await r.json().catch(() => ({}));
-      setKhata(data.khata ?? `فشل الإنشاء (HTTP ${r.status})`);
+      if (r.ok) {
+        router.push("/wukala");
+      } else {
+        setKhata(data.khata ?? `فشل الإنشاء (HTTP ${r.status})`);
+      }
     } finally {
       setJari(false);
     }
