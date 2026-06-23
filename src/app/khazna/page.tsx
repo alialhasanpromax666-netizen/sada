@@ -32,7 +32,7 @@ export default function KhaznaPage() {
   const [tahmil, setTahmil] = useState(true);
 
   // نموذج الإضافة
-  const [khidma, setKhidma] = useState<RamzKhidma>("ANTHROPIC");
+  const [khidma, setKhidma] = useState<RamzKhidma>("OPENROUTER");
   const [laqab, setLaqab] = useState("");
   const [sirr, setSirr] = useState("");
   const [ikhtibar, setIkhtibar] = useState<{ najah: boolean; risala: string } | null>(null);

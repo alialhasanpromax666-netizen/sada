@@ -26,7 +26,6 @@ export type RamzManassa =
 // ── رموز خدمات المفاتيح ─────────────────────────────────────
 export type RamzKhidma =
   | "OPENAI"
-  | "ANTHROPIC"
   | "OPENROUTER"
   | "BYNARA"
   | "X"
@@ -36,7 +35,7 @@ export type RamzKhidma =
   | "TELEGRAM";
 
 // ── مزوّدات محرّك التوليد (العقل) ───────────────────────────
-export type MuzawwidAql = "ANTHROPIC" | "OPENROUTER" | "BYNARA";
+export type MuzawwidAql = "OPENROUTER" | "BYNARA";
 
 export interface WasfMuzawwid {
   ramz: MuzawwidAql;
@@ -51,18 +50,6 @@ export interface WasfMuzawwid {
  * سجلّ المزوّدات — مصدر الحقيقة لخصائص كل مزوّد ونماذجه المقترحة.
  */
 export const MUZAWWIDUN: Record<MuzawwidAql, WasfMuzawwid> = {
-  ANTHROPIC: {
-    ramz: "ANTHROPIC",
-    ism: "Anthropic (Claude)",
-    ismLat: "Anthropic",
-    khidma: "ANTHROPIC",
-    namudhajIftiradi: "claude-opus-4-8",
-    namadhijMuqtaraha: [
-      "claude-opus-4-8",
-      "claude-sonnet-4-6",
-      "claude-haiku-4-5-20251001",
-    ],
-  },
   OPENROUTER: {
     ramz: "OPENROUTER",
     ism: "OpenRouter",
@@ -219,13 +206,6 @@ export const KHIDMAT: Record<RamzKhidma, WasfKhidma> = {
     ismLat: "OpenAI",
     lawn: "#10a37f",
     tawdih: "توليد محتوى نصّي بديل",
-  },
-  ANTHROPIC: {
-    ramz: "ANTHROPIC",
-    ism: "Anthropic (Claude)",
-    ismLat: "Anthropic",
-    lawn: "#d97757",
-    tawdih: "محرّك العقل الأساسي لتوليد المحتوى",
   },
   OPENROUTER: {
     ramz: "OPENROUTER",

@@ -30,7 +30,7 @@ export default function JadeedPage() {
   const [takhassus, setTakhassus] = useState("");
   const [wasf, setWasf] = useState("");
   const [maarifa, setMaarifa] = useState("");
-  const [muzawwid, setMuzawwid] = useState<"ANTHROPIC" | "OPENROUTER" | "BYNARA">("ANTHROPIC");
+  const [muzawwid, setMuzawwid] = useState<"OPENROUTER" | "BYNARA">("BYNARA");
   const [namudhaj, setNamudhaj] = useState("");
   const [nabra, setNabra] = useState(NABARAT[0]);
   const [uslub, setUslub] = useState("");
@@ -179,11 +179,11 @@ export default function JadeedPage() {
                   className="hakl"
                   value={muzawwid}
                   onChange={(e) => {
-                    setMuzawwid(e.target.value as "ANTHROPIC" | "OPENROUTER");
+                    setMuzawwid(e.target.value as "OPENROUTER" | "BYNARA");
                     setNamudhaj("");
                   }}
                 >
-                  {(["ANTHROPIC", "OPENROUTER", "BYNARA"] as const).map((r) => (
+                  {(["BYNARA", "OPENROUTER"] as const).map((r) => (
                     <option key={r} value={r} className="bg-layli-800">
                       {MUZAWWIDUN[r].ism} — {MUZAWWIDUN[r].ismLat}
                     </option>

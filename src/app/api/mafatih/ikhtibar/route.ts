@@ -6,25 +6,10 @@
  * تحذير: السرّ يُستخدم في الذاكرة لإجراء الاختبار فقط ولا يُخزَّن هنا.
  */
 import { NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
 import { jalbNashir } from "@/lib/nashir";
 import type { NatijatIkhtibar, RamzKhidma, RamzManassa } from "@/lib/types";
 
 export const runtime = "nodejs";
-
-async function ikhtibarAnthropic(sirr: string): Promise<NatijatIkhtibar> {
-  try {
-    const amil = new Anthropic({ apiKey: sirr });
-    await amil.messages.create({
-      model: process.env.SADA_AQL_MODEL ?? "claude-opus-4-8",
-      max_tokens: 8,
-      messages: [{ role: "user", content: "مرحبا" }],
-    });
-    return { najah: true, risala: "مفتاح Anthropic صالح ومتّصل." };
-  } catch (e) {
-    return { najah: false, risala: `فشل: ${(e as Error).message}` };
-  }
-}
 
 async function ikhtibarOpenAI(sirr: string): Promise<NatijatIkhtibar> {
   try {
@@ -83,9 +68,7 @@ export async function POST(req: Request) {
 
   let natija: NatijatIkhtibar;
 
-  if (khidma === "ANTHROPIC") {
-    natija = await ikhtibarAnthropic(sirr);
-  } else if (khidma === "OPENAI") {
+  if (khidma === "OPENAI") {
     natija = await ikhtibarOpenAI(sirr);
   } else if (khidma === "OPENROUTER") {
     natija = await ikhtibarOpenRouter(sirr);

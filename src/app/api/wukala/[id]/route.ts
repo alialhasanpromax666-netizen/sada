@@ -43,7 +43,7 @@ export async function PATCH(
         ? { khitaShahri: khitaShahri.trim() ? khitaShahri.trim() : null }
         : {}),
       ...(muzawwid !== undefined
-        ? { muzawwid: ["OPENROUTER", "BYNARA"].includes(muzawwid) ? muzawwid : "ANTHROPIC" }
+        ? { muzawwid: ["OPENROUTER", "BYNARA"].includes(muzawwid) ? muzawwid : "BYNARA" }
         : {}),
       ...(namudhaj !== undefined
         ? { namudhaj: namudhaj.trim() ? namudhaj.trim() : null }

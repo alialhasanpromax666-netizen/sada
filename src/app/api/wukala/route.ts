@@ -56,7 +56,7 @@ export async function POST(req: Request) {
       awtomatiki: Boolean(body.awtomatiki),
       maarifa: body.maarifa?.trim() ? body.maarifa.trim() : null,
       khitaShahri: body.khitaShahri?.trim() ? body.khitaShahri.trim() : null,
-      muzawwid: ["OPENROUTER", "BYNARA"].includes(body.muzawwid ?? "") ? body.muzawwid : "ANTHROPIC",
+      muzawwid: ["OPENROUTER", "BYNARA"].includes(body.muzawwid ?? "") ? body.muzawwid : "BYNARA",
       namudhaj: body.namudhaj?.trim() ? body.namudhaj.trim() : null,
       hala: "NASHIT",
     },

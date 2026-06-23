@@ -3,7 +3,7 @@
  *
  * GET /api/namadhij?muzawwid=OPENROUTER → { namadhij: string[], masdar }
  *
- * - ANTHROPIC: تُرجِع النماذج المقترحة الثابتة.
+ * - BYNARA: تُرجِع النماذج المقترحة الثابتة.
  * - OPENROUTER: تجلب القائمة الحيّة من OpenRouter بمفتاح المستخدم المفعّل
  *   (إن وُجد)، وإلّا تعود للنماذج المقترحة.
  */
@@ -17,7 +17,7 @@ export const runtime = "nodejs";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const muzawwid = (searchParams.get("muzawwid") ?? "ANTHROPIC") as MuzawwidAql;
+  const muzawwid = (searchParams.get("muzawwid") ?? "BYNARA") as MuzawwidAql;
   const wasf = MUZAWWIDUN[muzawwid];
   if (!wasf) {
     return NextResponse.json({ khata: "مزوّد غير معروف." }, { status: 400 });

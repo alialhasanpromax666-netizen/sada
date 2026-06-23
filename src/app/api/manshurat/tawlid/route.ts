@@ -37,8 +37,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ khata: "الوكيل غير موجود." }, { status: 404 });
   }
 
-  const muzawwid = (wakeel.muzawwid as MuzawwidAql) ?? "ANTHROPIC";
-  // مفتاح المزوّد المفعّل (إن غاب، يعتمد العقل مفتاح البيئة لأنثروبيك فقط).
+  const muzawwid: MuzawwidAql =
+    wakeel.muzawwid === "OPENROUTER" ? "OPENROUTER" : "BYNARA";
   const miftahAql = await jalbMiftahAql(m.id, muzawwid);
 
   try {

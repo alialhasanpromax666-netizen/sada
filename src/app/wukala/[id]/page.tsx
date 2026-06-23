@@ -52,7 +52,7 @@ export default function TahrirWakeel() {
   const [takhassus, setTakhassus] = useState("");
   const [wasf, setWasf] = useState("");
   const [maarifa, setMaarifa] = useState("");
-  const [muzawwid, setMuzawwid] = useState<"ANTHROPIC" | "OPENROUTER" | "BYNARA">("ANTHROPIC");
+  const [muzawwid, setMuzawwid] = useState<"OPENROUTER" | "BYNARA">("BYNARA");
   const [namudhaj, setNamudhaj] = useState("");
   const [nabra, setNabra] = useState(NABARAT[0]);
   const [uslub, setUslub] = useState("");
@@ -78,7 +78,7 @@ export default function TahrirWakeel() {
       setWasf(w.wasf);
       setTakhassus(w.takhassus);
       setMaarifa(w.maarifa ?? "");
-      setMuzawwid(w.muzawwid === "OPENROUTER" ? "OPENROUTER" : "ANTHROPIC");
+      setMuzawwid(w.muzawwid === "OPENROUTER" ? "OPENROUTER" : "BYNARA");
       setNamudhaj(w.namudhaj ?? "");
       setNabra(NABARAT.includes(sh.nabra) ? sh.nabra : NABARAT[0]);
       setUslub(sh.uslub ?? "");
@@ -276,8 +276,8 @@ export default function TahrirWakeel() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="mb-1.5 block text-sm text-slate-300">المزوّد</label>
-              <select className="hakl" value={muzawwid} onChange={(e) => { setMuzawwid(e.target.value as "ANTHROPIC" | "OPENROUTER"); setNamudhaj(""); }}>
-                {(["ANTHROPIC", "OPENROUTER", "BYNARA"] as const).map((r) => (
+              <select className="hakl" value={muzawwid} onChange={(e) => { setMuzawwid(e.target.value as "OPENROUTER" | "BYNARA"); setNamudhaj(""); }}>
+                {(["BYNARA", "OPENROUTER"] as const).map((r) => (
                   <option key={r} value={r} className="bg-layli-800">
                     {MUZAWWIDUN[r].ism} — {MUZAWWIDUN[r].ismLat}
                   </option>

@@ -47,8 +47,8 @@ model Wakeel {
   maarifa      String?
   // خطة النشر الشهرية (JSON): { mu3addal, adad, awqat, ayyam }
   khitaShahri  String?
-  // مزوّد الذكاء: ANTHROPIC | OPENROUTER | BYNARA (نصّ بدل enum لتوافق SQLite).
-  muzawwid     String   @default("ANTHROPIC")
+  // مزوّد الذكاء: BYNARA | OPENROUTER (نصّ بدل enum لتوافق SQLite).
+  muzawwid     String   @default("BYNARA")
   // اسم النموذج المختار (مثال: claude-opus-4-8 أو openai/gpt-4o). فارغ = افتراضي المزوّد.
   namudhaj     String?
   // الحالة: NAA_IM | NASHIT | MUAALLAQ  (نصّ بدل enum لتوافق SQLite)

@@ -3,19 +3,12 @@
  *  العَقْل (Al-Aql) — محرّك توليد المحتوى الذكي
  * ════════════════════════════════════════════════════════════
  *
- * "العقل" هو الذكاء خلف كل وكيل في صَدَى. يأخذ شخصية الوكيل
- * وتخصّصه ومعرفته بالعمل والمنصّة المستهدفة، ثم يصوغ منشورات
- * أصيلة مُهيّأة لقيود كل منصّة.
+ * "العقل" هو الذكاء خلف كل وكيل في صَدَى.
  *
  * مزوّدان مدعومان لكل وكيل على حدة:
- *   - ANTHROPIC : عبر مكتبة Anthropic الرسمية (تفكير تكيّفي + مخرجات منظَّمة).
- *   - OPENROUTER: عبر واجهة متوافقة مع OpenAI (بوّابة نماذج متعدّدة).
- *
- * كما يدعم «الموضوع الذاتي»: حين لا يُمرَّر موضوع، يختار النموذج بنفسه
- * فكرة طازجة من مجال الوكيل ومعرفته — أساس النشر الذاتي للقناة.
+ *   - BYNARA    : بوابة نماذج عبر naraya.ai
+ *   - OPENROUTER: عبر واجهة متوافقة مع OpenAI.
  */
-
-import Anthropic from "@anthropic-ai/sdk";
 import {
   MANASSAT,
   MUZAWWIDUN,
@@ -40,11 +33,11 @@ export interface TalabTawlid {
   mawdu?: string;
   /** عدد المنشورات المطلوب توليدها (افتراضي 3) */
   adad?: number;
-  /** مزوّد التوليد (افتراضي ANTHROPIC) */
+  /** مزوّد التوليد (افتراضي BYNARA) */
   muzawwid?: MuzawwidAql;
   /** اسم النموذج (افتراضي: افتراضي المزوّد) */
   namudhaj?: string | null;
-  /** مفتاح المزوّد (مفكوك التشفير؛ يُستخدم مفتاح البيئة لأنثروبيك إن غاب) */
+  /** مفتاح المزوّد (مفكوك التشفير) */
   miftah?: string;
 }
 
@@ -136,46 +129,6 @@ const MUKHATTAT_MUKHRAJAT = {
 /** يقصّ النصوص على الحد الأقصى للمنصّة كطبقة أمان أخيرة. */
 function hadDikat(manshurat: string[], hadAqsa: number): string[] {
   return manshurat.map((t) => (t.length > hadAqsa ? t.slice(0, hadAqsa) : t));
-}
-
-// ── مزوّد Anthropic ─────────────────────────────────────────
-async function tawlidAnthropic(
-  talab: TalabTawlid,
-  adad: number,
-  namudhaj: string,
-): Promise<string[]> {
-  const apiKey = talab.miftah ?? process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    throw new Error(
-      "[صَدَى/العقل] لا يوجد مفتاح Anthropic. أضِف مفتاحاً في خزنة المفاتيح أو عرّف ANTHROPIC_API_KEY في البيئة.",
-    );
-  }
-  const amil = new Anthropic({ apiKey });
-  const m = MANASSAT[talab.manassa];
-
-  // ملاحظة: نمرّر المعاملات كـ any لأن بعض إصدارات SDK لا تُعرّف بعد
-  // أنواع التفكير التكيّفي والمخرجات المنظَّمة — لكنها صالحة وقت التشغيل.
-  const params = {
-    model: namudhaj,
-    max_tokens: 4000,
-    thinking: { type: "adaptive" },
-    system: bina2TaalimatNizam(talab),
-    output_config: {
-      format: { type: "json_schema", schema: MUKHATTAT_MUKHRAJAT },
-    },
-    messages: [{ role: "user", content: bina2TalabMustakhdim(talab, adad) }],
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const radd: any = await amil.messages.create(params as any);
-  const kutla = (radd.content as Array<{ type: string; text?: string }>).find(
-    (b) => b.type === "text" && b.text,
-  );
-  if (!kutla?.text) {
-    throw new Error("[صَدَى/العقل] لم يُرجِع النموذج محتوى نصّياً.");
-  }
-  const mufakkak = JSON.parse(kutla.text) as { manshurat: string[] };
-  return hadDikat(mufakkak.manshurat ?? [], m.hadAqsa);
 }
 
 // ── مزوّد OpenRouter (متوافق مع OpenAI) ─────────────────────
@@ -306,21 +259,18 @@ async function tawlidBynara(
  */
 export async function tawlidMuhtawa(talab: TalabTawlid): Promise<string[]> {
   const adad = Math.min(Math.max(talab.adad ?? 3, 1), 8);
-  const muzawwid: MuzawwidAql = talab.muzawwid ?? "ANTHROPIC";
+  const muzawwid: MuzawwidAql =
+    talab.muzawwid === "OPENROUTER" ? "OPENROUTER" : "BYNARA";
   const namudhaj = hallNamudhaj(muzawwid, talab.namudhaj);
 
   if (muzawwid === "OPENROUTER") {
     return tawlidOpenRouter(talab, adad, namudhaj);
   }
-  if (muzawwid === "BYNARA") {
-    return tawlidBynara(talab, adad, namudhaj);
-  }
-  return tawlidAnthropic(talab, adad, namudhaj);
+  return tawlidBynara(talab, adad, namudhaj);
 }
 
 /**
  * تَنْقِيح (Refine): يعيد صياغة منشور قائم وفق توجيه (أقصر/أقوى/نبرة مختلفة).
- * يستخدم مزوّد Anthropic (التنقيح السريع).
  */
 export async function tanqihMuhtawa(
   matnAsli: string,
@@ -328,29 +278,36 @@ export async function tanqihMuhtawa(
   manassa: RamzManassa,
   miftah?: string,
 ): Promise<string> {
-  const apiKey = miftah ?? process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) return matnAsli;
-  const amil = new Anthropic({ apiKey });
+  if (!miftah) return matnAsli;
   const m = MANASSAT[manassa];
 
-  const params = {
-    model: process.env.SADA_AQL_MODEL ?? "claude-opus-4-8",
-    max_tokens: 2000,
-    thinking: { type: "adaptive" },
-    system: `أنت محرّر محتوى خبير لمنصّة ${m.ism}. الحد الأقصى ${m.hadAqsa} حرفاً.`,
-    messages: [
-      {
-        role: "user",
-        content: `أعد صياغة المنشور التالي وفق التوجيه: "${tawjih}".\n\nالمنشور:\n${matnAsli}\n\nأعطني النص الجديد فقط دون مقدّمات.`,
-      },
-    ],
-  };
+  const radd = await fetch("https://router.bynara.id/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${miftah}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "mistral-medium-3-5",
+      max_tokens: 2000,
+      messages: [
+        {
+          role: "system",
+          content: `أنت محرّر محتوى خبير لمنصّة ${m.ism}. الحد الأقصى ${m.hadAqsa} حرفاً.`,
+        },
+        {
+          role: "user",
+          content: `أعد صياغة المنشور التالي وفق التوجيه: "${tawjih}".\n\nالمنشور:\n${matnAsli}\n\nأعطني النص الجديد فقط دون مقدّمات.`,
+        },
+      ],
+    }),
+  });
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const radd: any = await amil.messages.create(params as any);
-  const kutla = (radd.content as Array<{ type: string; text?: string }>).find(
-    (b) => b.type === "text" && b.text,
-  );
-  const natija = kutla?.text ? kutla.text.trim() : matnAsli;
+  if (!radd.ok) return matnAsli;
+
+  const data = (await radd.json()) as {
+    choices?: { message?: { content?: string } }[];
+  };
+  const natija = data.choices?.[0]?.message?.content?.trim() ?? matnAsli;
   return natija.length > m.hadAqsa ? natija.slice(0, m.hadAqsa) : natija;
 }

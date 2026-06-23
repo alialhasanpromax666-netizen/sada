@@ -33,10 +33,9 @@ export default async function IdadatPage() {
 
   const tashfeer = tashfeerJahiz();
   const aqlJahiz =
-    Boolean(process.env.ANTHROPIC_API_KEY) ||
-    khidmatMufaala.has("ANTHROPIC") ||
+    khidmatMufaala.has("BYNARA") ||
     khidmatMufaala.has("OPENROUTER");
-  const namudhaj = process.env.SADA_AQL_MODEL ?? "claude-opus-4-8";
+  const namudhaj = process.env.SADA_AQL_MODEL ?? "mistral-large";
 
   const aqsam: {
     Ayquna: (p: { className?: string }) => ReactNode;
@@ -56,11 +55,11 @@ export default async function IdadatPage() {
     },
     {
       Ayquna: AyqunaAql,
-      ism: "العقل (Claude / OpenRouter)",
+      ism: "العقل (Bynara / OpenRouter)",
       jahiz: aqlJahiz,
       lawn: "from-aql to-aql-deep",
       jayyid: `محرّك التوليد جاهز. النموذج الافتراضي: ${namudhaj}.`,
-      sayyi: "أضِف مفتاح Anthropic أو OpenRouter في خزنة المفاتيح (أو ANTHROPIC_API_KEY في البيئة).",
+      sayyi: "أضِف مفتاح Bynara أو OpenRouter في خزنة المفاتيح.",
     },
     {
       Ayquna: AyqunaNashr,

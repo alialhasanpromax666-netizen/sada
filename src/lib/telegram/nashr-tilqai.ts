@@ -60,7 +60,8 @@ export async function nashrTilqaiTelegram(
   }
 
   // 2) توليد المحتوى عبر مزوّد الوكيل ونموذجه ومعرفته.
-  const muzawwid = (wakeel.muzawwid as MuzawwidAql) ?? "ANTHROPIC";
+  const muzawwid: MuzawwidAql =
+    wakeel.muzawwid === "OPENROUTER" ? "OPENROUTER" : "BYNARA";
   const miftahAql = await jalbMiftahAql(mustakhdimId, muzawwid);
   const adad = opts.wad3 === "fawri" ? 1 : Math.min(Math.max(opts.adad ?? 3, 1), 6);
 
