@@ -83,11 +83,14 @@ export default function KhaznaPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ manassa: khidma, laqab, sirr }),
       });
+      const d = await r.json();
       if (r.ok) {
         setLaqab("");
         setSirr("");
         setIkhtibar(null);
         await jalb();
+      } else {
+        setIkhtibar({ najah: false, risala: d.khata ?? "فشل الحفظ." });
       }
     } finally {
       setJariHifz(false);
