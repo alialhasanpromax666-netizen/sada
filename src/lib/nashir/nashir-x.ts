@@ -51,7 +51,15 @@ export class NashirX extends Nashir {
       };
 
       if (!radd.ok || !data.data) {
-        return { najah: false, risala: data.detail ?? "مفتاح غير صالح أو منتهي." };
+        const msg = data.detail ?? "";
+        if (msg.includes("oauth") || msg.includes("token") || radd.status === 401) {
+          return {
+            najah: false,
+            risala:
+              "تحتاج OAuth 2.0 Access Token (وليس API Key). اذهب إلى Twitter Developer Portal → App → Keys and Tokens → OAuth 2.0 → Generate.",
+          };
+        }
+        return { najah: false, risala: msg || "مفتاح غير صالح أو منتهي." };
       }
       return {
         najah: true,

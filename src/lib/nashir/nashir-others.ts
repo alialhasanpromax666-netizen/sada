@@ -47,7 +47,18 @@ export class NashirLinkedIn extends Nashir {
       const radd = await fetch("https://api.linkedin.com/v2/userinfo", {
         headers: { Authorization: `Bearer ${miftah}` },
       });
-      if (!radd.ok) return { najah: false, risala: "مفتاح لينكدإن غير صالح." };
+      if (!radd.ok) {
+        const j = await radd.json().catch(() => ({}));
+        const msg = j.message ?? "غير معروف";
+        if (msg.includes("INVALID_ACCESS_TOKEN") || radd.status === 401) {
+          return {
+            najah: false,
+            risala:
+              "تحتاج Access Token من OAuth (وليس Client ID/Secret). اذهب إلى LinkedIn Developer → إنشاء تطبيق → Auth → OAuth 2.0 → احصل على Access Token.",
+          };
+        }
+        return { najah: false, risala: `لينكدإن: ${msg}` };
+      }
       const data = (await radd.json()) as { name?: string };
       return { najah: true, risala: `متّصل: ${data.name ?? "عضو لينكدإن"}` };
     } catch (e) {
@@ -90,8 +101,17 @@ export class NashirMeta extends Nashir {
         `https://graph.facebook.com/v21.0/me?access_token=${encodeURIComponent(miftah)}`,
       );
       const data = (await radd.json()) as { name?: string; error?: { message: string } };
-      if (!radd.ok || data.error)
-        return { najah: false, risala: data.error?.message ?? "رمز غير صالح." };
+      if (!radd.ok || data.error) {
+        const msg = data.error?.message ?? "رمز غير صالح.";
+        if (msg.includes("token") || msg.includes("OAuth") || radd.status === 401) {
+          return {
+            najah: false,
+            risala:
+              "تحتاج OAuth Access Token من Meta (وليس Client Secret). اذهب إلى Meta Developer → My Apps → Graph API → Generate Token.",
+          };
+        }
+        return { najah: false, risala: msg };
+      }
       return { najah: true, risala: `متّصل: ${data.name ?? "حساب ميتا"}` };
     } catch (e) {
       return { najah: false, risala: (e as Error).message };
