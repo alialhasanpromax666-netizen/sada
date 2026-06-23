@@ -3,6 +3,11 @@ import { withAuth } from "next-auth/middleware";
 export default withAuth({
   callbacks: {
     authorized: ({ req, token }) => {
+      // السماح لـ cron-job.org عبر header سري
+      if (req.nextUrl.pathname.startsWith("/api/mujadwil/tanfidh")) {
+        const cronSecret = req.headers.get("x-cron-secret");
+        if (cronSecret && cronSecret === process.env.CRON_SECRET) return true;
+      }
       // مسارات المصادقة مفتوحة للجميع
       if (req.nextUrl.pathname.startsWith("/api/auth")) return true;
       if (req.nextUrl.pathname === "/idkhal") return true;
