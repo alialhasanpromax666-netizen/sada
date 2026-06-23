@@ -31,6 +31,11 @@ interface ManshurAard {
   mawiidNashr: string | null;
   wakeel: { ism: string };
 }
+interface TahrirManshur {
+  id: string;
+  matn: string;
+  mawiidNashr: string;
+}
 
 function JadwalaContent() {
   const params = useSearchParams();
@@ -47,6 +52,12 @@ function JadwalaContent() {
   const [manshurat, setManshurat] = useState<ManshurAard[]>([]);
   const [mustahaqq, setMustahaqq] = useState(0); // منشورات حان موعدها
   const [jariTanfidh, setJariTanfidh] = useState(false);
+
+  // تعديل المنشور
+  const [tahrir, setTahrir] = useState<TahrirManshur | null>(null);
+  const [matnTahrir, setMatnTahrir] = useState("");
+  const [mawidTahrir, setMawidTahrir] = useState("");
+  const [jariHifz, setJariHifz] = useState(false);
 
   // جلب الوكلاء
   useEffect(() => {
@@ -138,6 +149,41 @@ function JadwalaContent() {
 
   async function nashrMawjud(id: string) {
     await fetch(`/api/manshurat/${id}/nashr`, { method: "POST" });
+    jalbManshurat();
+  }
+
+  // فتح نافذة التعديل
+  function iftahTahrir(p: ManshurAard) {
+    setTahrir({ id: p.id, matn: p.matn, mawiidNashr: p.mawiidNashr ?? "" });
+    setMatnTahrir(p.matn);
+    setMawidTahrir(p.mawiidNashr ? new Date(p.mawiidNashr).toISOString().slice(0, 16) : "");
+  }
+
+  // حفظ التعديلات
+  async function hifzTahrir() {
+    if (!tahrir) return;
+    setJariHifz(true);
+    try {
+      await fetch(`/api/manshurat/${tahrir.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          matn: matnTahrir,
+          mawiidNashr: mawidTahrir ? new Date(mawidTahrir).toISOString() : null,
+        }),
+      });
+      setTahrir(null);
+      jalbManshurat();
+    } finally {
+      setJariHifz(false);
+    }
+  }
+
+  // حذف منشور
+  async function huthfManshur(id: string) {
+    if (!confirm("هل أنت متأكد من حذف هذا المنشور؟")) return;
+    await fetch(`/api/manshurat/${id}`, { method: "DELETE" });
+    setTahrir(null);
     jalbManshurat();
   }
 
@@ -319,12 +365,20 @@ function JadwalaContent() {
                   </div>
                   <HalaWasm hala={p.hala} />
                   {(p.hala === "MUSAWWADA" || p.hala === "MAJDWAL" || p.hala === "FASHIL") && (
-                    <button
-                      className="zir-asasi px-3 py-1.5 text-xs"
-                      onClick={() => nashrMawjud(p.id)}
-                    >
-                      نشر
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        className="zir-thanawi px-3 py-1.5 text-xs"
+                        onClick={() => iftahTahrir(p)}
+                      >
+                        تعديل
+                      </button>
+                      <button
+                        className="zir-asasi px-3 py-1.5 text-xs"
+                        onClick={() => nashrMawjud(p.id)}
+                      >
+                        نشر
+                      </button>
+                    </div>
                   )}
                 </li>
               );
@@ -332,6 +386,48 @@ function JadwalaContent() {
           </ul>
         )}
       </section>
+
+      {/* نافذة التعديل */}
+      {tahrir && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="bitaqa w-full max-w-lg space-y-4 p-6">
+            <h3 className="text-lg font-bold text-white">تعديل المنشور</h3>
+            <div>
+              <label className="mb-1.5 block text-sm text-slate-300">النص</label>
+              <textarea
+                className="hakl min-h-[120px]"
+                value={matnTahrir}
+                onChange={(e) => setMatnTahrir(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-sm text-slate-300">موعد النشر (اتركه فارغاً للنشر الفوري)</label>
+              <input
+                type="datetime-local"
+                className="hakl"
+                value={mawidTahrir}
+                onChange={(e) => setMawidTahrir(e.target.value)}
+              />
+            </div>
+            <div className="flex items-center justify-between pt-2">
+              <button
+                className="rounded-xl border border-rose-500/40 bg-rose-500/10 px-4 py-2 text-sm text-rose-300 hover:bg-rose-500/20 transition"
+                onClick={() => huthfManshur(tahrir.id)}
+              >
+                حذف المنشور
+              </button>
+              <div className="flex gap-3">
+                <button className="zir-thanawi" onClick={() => setTahrir(null)}>
+                  إلغاء
+                </button>
+                <button className="zir-asasi" onClick={hifzTahrir} disabled={jariHifz}>
+                  {jariHifz ? "جارٍ الحفظ..." : "حفظ التعديلات"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
