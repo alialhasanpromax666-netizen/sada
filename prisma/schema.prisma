@@ -1,0 +1,149 @@
+// ════════════════════════════════════════════════════════════
+//  صَدَى (Sada) — مخطط قاعدة البيانات
+//  فلسفة النمذجة: كل "وكيل" كيان مستقل له شخصيته ومفاتيحه
+//  ومنشوراته وتحليلاته. المفاتيح تُخزَّن مشفّرة دائماً (AES-256-GCM).
+// ════════════════════════════════════════════════════════════
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  // SQLite محلياً، PostgreSQL في الإنتاج (Neon على Vercel).
+  // غيّر DATABASE_URL إلى رابط Neon وسوي prisma generate.
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── المستخدم (صاحب الحساب) ───────────────────────────────────
+model Mustakhdim {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  ism       String // الاسم
+  kalimaSirr String? // كلمة السر (مشفّرة بـ bcrypt، null يعني لم تُضبط بعد)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  wukala       Wakeel[] // وكلاؤه الذكيون
+  mafatih      Miftah[] // مفاتيح API الخاصة به
+  isharat      Ishaar[] // إشعاراته
+
+  // الوكيل المرتبط بقناة تيليغرام للنشر الذاتي (ينشر بنفسه).
+  wakeelTelegramId String?
+
+  @@map("mustakhdimun")
+}
+
+// ── الوكيل الذكي (قلب المنصة) ───────────────────────────────
+// كل وكيل له شخصية ونبرة وتخصّص محتوى ومنصات ينشر عليها.
+model Wakeel {
+  id           String   @id @default(cuid())
+  ism          String // اسم الوكيل (مثال: "سفير التقنية")
+  wasf         String // وصف موجز لمهمّته
+  shakhsiyya   String // الشخصية/النبرة (JSON: نبرة، أسلوب، لغة، رموز)
+  takhassus    String // مجال التخصّص (تقنية، تسويق، فن...)
+  manassat     String // المنصات المستهدفة (JSON array من رموز المنصات)
+  // معرفة الوكيل عن العمل/الشركة (محتوى Markdown يُحقن في سياق التوليد).
+  maarifa      String?
+  // خطة النشر الشهرية (JSON): { mu3addal, adad, awqat, ayyam }
+  khitaShahri  String?
+  // مزوّد الذكاء: ANTHROPIC | OPENROUTER | BYNARA (نصّ بدل enum لتوافق SQLite).
+  muzawwid     String   @default("ANTHROPIC")
+  // اسم النموذج المختار (مثال: claude-opus-4-8 أو openai/gpt-4o). فارغ = افتراضي المزوّد.
+  namudhaj     String?
+  // الحالة: NAA_IM | NASHIT | MUAALLAQ  (نصّ بدل enum لتوافق SQLite)
+  hala         String   @default("NAA_IM")
+  awtomatiki   Boolean  @default(false) // هل النشر التلقائي مفعّل؟
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  mustakhdimId String
+  mustakhdim   Mustakhdim @relation(fields: [mustakhdimId], references: [id], onDelete: Cascade)
+
+  manshurat    Manshur[] // منشوراته
+
+  @@index([mustakhdimId])
+  @@map("wukala")
+}
+
+// ── مفتاح API (مخزَّن مشفّراً) ───────────────────────────────
+// لا تُخزَّن القيمة الخام أبداً — فقط النص المشفّر + بيانات وصفية.
+model Miftah {
+  id            String   @id @default(cuid())
+  manassa       String // المنصة/الخدمة (OPENAI, X, META, LINKEDIN, TIKTOK)
+  laqab         String // لقب يميّز المفتاح (مثال: "حساب الشركة الرئيسي")
+  // النص المشفّر بصيغة: iv:authTag:ciphertext (كله base64)
+  qimaMushaffara String
+  // بصمة آخر 4 أحرف للعرض فقط (لا تكشف السر)
+  basma         String
+  fa3aal        Boolean  @default(true) // مفعّل؟
+  akhirIstikhdam DateTime? // آخر استخدام (لمراقبة الاستخدام)
+  marratIstikhdam Int     @default(0) // عدّاد الاستخدام
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  mustakhdimId  String
+  mustakhdim    Mustakhdim @relation(fields: [mustakhdimId], references: [id], onDelete: Cascade)
+
+  @@index([mustakhdimId, manassa])
+  @@map("mafatih")
+}
+
+// ── المنشور (محتوى مولّد + جدولة + حالة) ─────────────────────
+model Manshur {
+  id          String       @id @default(cuid())
+  manassa     String // المنصة المستهدفة
+  matn        String // نص المنشور
+  wasait      String? // وسائط مرفقة (JSON array من روابط)
+  // الحالة: MUSAWWADA | MAJDWAL | QAYD_NASHR | MANSHUR | FASHIL
+  hala        String       @default("MUSAWWADA")
+  mawiidNashr DateTime? // موعد النشر المجدول
+  nushiraFi   DateTime? // وقت النشر الفعلي
+  maerifNashr String? // معرّف المنشور على المنصة بعد النشر
+  khata       String? // رسالة الخطأ إن فشل النشر
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  wakeelId    String
+  wakeel      Wakeel       @relation(fields: [wakeelId], references: [id], onDelete: Cascade)
+
+  tahlil      Tahlil? // تحليلات الأداء بعد النشر
+
+  @@index([wakeelId, hala])
+  @@index([mawiidNashr])
+  @@map("manshurat")
+}
+
+// ── تحليلات أداء المنشور ─────────────────────────────────────
+model Tahlil {
+  id          String   @id @default(cuid())
+  mushahadat  Int      @default(0) // مشاهدات
+  i3jabat     Int      @default(0) // إعجابات
+  musharakat  Int      @default(0) // مشاركات
+  ta3liqat    Int      @default(0) // تعليقات
+  naqarat     Int      @default(0) // نقرات
+  mu3addalTafa3ul Float @default(0) // معدّل التفاعل (%)
+  akhirTahdith DateTime @default(now())
+
+  manshurId   String   @unique
+  manshur     Manshur  @relation(fields: [manshurId], references: [id], onDelete: Cascade)
+
+  @@map("tahlilat")
+}
+
+// ── الإشعارات الفورية ───────────────────────────────────────
+model Ishaar {
+  id         String   @id @default(cuid())
+  // النوع: MA3LUMA | NAJAH | TAHDHIR | KHATA
+  naw3       String   @default("MA3LUMA")
+  unwan      String // عنوان الإشعار
+  matn       String // نص الإشعار
+  maqru      Boolean  @default(false) // مقروء؟
+  createdAt  DateTime @default(now())
+
+  mustakhdimId String
+  mustakhdim   Mustakhdim @relation(fields: [mustakhdimId], references: [id], onDelete: Cascade)
+
+  @@index([mustakhdimId, maqru])
+  @@map("isharat")
+}

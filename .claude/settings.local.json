@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/dev/**)",
+      "Bash(git -C /Users/dev/workspace-7bf1462e status --short)",
+      "Skill(claude-api)",
+      "Bash(timeout 480 npm install)",
+      "Bash(ls node_modules)",
+      "Bash(ls node_modules/.bin/next)",
+      "Bash(ls node_modules/@anthropic-ai/sdk)",
+      "Bash(ls node_modules/@prisma/client)",
+      "Bash(npx prisma *)",
+      "Bash(npm run *)",
+      "Bash(npx tsc *)",
+      "Bash(curl -s -X POST \"http://localhost:3000/api/mujadwil/tanfidh\")",
+      "Bash(curl -s \"http://localhost:3000/api/mujadwil/tanfidh\")",
+      "Read(//tmp/**)",
+      "Bash(curl -s \"http://localhost:3000/api/wukala\")",
+      "Bash(tasklist)",
+      "Bash(netstat -ano)"
+    ]
+  }
+}

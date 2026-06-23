@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ════════════════════════════════════════════════════════════
+   صَدَى — الطبقة البصرية الأساسية (RTL + الليل الرقمي)
+   ════════════════════════════════════════════════════════════ */
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-layli-900 text-slate-200 antialiased;
+    background-image:
+      radial-gradient(circle at 15% -10%, rgba(167, 139, 250, 0.12), transparent 45%),
+      radial-gradient(circle at 90% 0%, rgba(45, 212, 191, 0.1), transparent 40%);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+
+  /* شريط تمرير مخصّص */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-layli-800;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-layli-600 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-aql-deep;
+  }
+}
+
+@layer components {
+  /* بطاقة زجاجية — العنصر البصري الأساسي */
+  .bitaqa {
+    @apply rounded-2xl border border-white/10 bg-layli-800/60 backdrop-blur-xl;
+    @apply shadow-lg shadow-black/30;
+  }
+
+  /* زرّ أساسي متوهّج */
+  .zir-asasi {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5;
+    @apply bg-sada text-layli-900 font-semibold;
+    @apply transition hover:bg-sada-soft hover:shadow-glow active:scale-95;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none;
+  }
+
+  /* زرّ ثانوي */
+  .zir-thanawi {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5;
+    @apply border border-white/15 bg-white/5 text-slate-200 font-medium;
+    @apply transition hover:bg-white/10 active:scale-95;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* حقل إدخال */
+  .hakl {
+    @apply w-full rounded-xl border border-white/10 bg-layli-900/70 px-4 py-2.5;
+    @apply text-slate-100 placeholder:text-slate-500;
+    @apply outline-none transition focus:border-sada/60 focus:ring-2 focus:ring-sada/20;
+  }
+
+  /* وسم/شارة */
+  .wasm {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium;
+  }
+}
