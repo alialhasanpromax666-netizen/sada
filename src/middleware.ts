@@ -5,6 +5,7 @@ import type { NextRequest } from "next/server";
 const MASARAT_MAFTUHA = [
   "/idkhal",
   "/api/auth",
+  "/api/telegram/webhook",
   "/_next",
   "/favicon.ico",
 ];
