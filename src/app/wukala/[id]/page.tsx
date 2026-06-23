@@ -47,6 +47,7 @@ export default function TahrirWakeel() {
   const [tahmil, setTahmil] = useState(true);
   const [jari, setJari] = useState(false);
   const [mawjud, setMawjud] = useState(true);
+  const [khata, setKhata] = useState("");
 
   const [ism, setIsm] = useState("");
   const [takhassus, setTakhassus] = useState("");
@@ -114,6 +115,7 @@ export default function TahrirWakeel() {
 
   async function hifz() {
     setJari(true);
+    setKhata("");
     try {
       const r = await fetch(`/api/wukala/${id}`, {
         method: "PATCH",
@@ -137,6 +139,8 @@ export default function TahrirWakeel() {
         }),
       });
       if (r.ok) router.push("/wukala");
+      const data = await r.json().catch(() => ({}));
+      setKhata(data.khata ?? `فشل الحفظ (HTTP ${r.status})`);
     } finally {
       setJari(false);
     }
@@ -368,6 +372,7 @@ export default function TahrirWakeel() {
           {jari ? "جارٍ الحفظ..." : <span className="flex items-center gap-2"><AyqunaSah className="h-4 w-4" /> حفظ التغييرات</span>}
         </button>
       </div>
+      {khata && <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">{khata}</div>}
     </div>
   );
 }

@@ -31,7 +31,7 @@ export async function PATCH(
       manassat?: string[];
     };
 
-  await db.wakeel.updateMany({
+  const natija = await db.wakeel.updateMany({
     where: { id: params.id, mustakhdimId: m.id },
     data: {
       ...(hala ? { hala } : {}),
@@ -55,6 +55,12 @@ export async function PATCH(
       ...(manassat ? { manassat: JSON.stringify(manassat) } : {}),
     },
   });
+  if (natija.count === 0) {
+    return NextResponse.json(
+      { khata: "الوكيل غير موجود أو لا ينتمي إليك." },
+      { status: 404 },
+    );
+  }
   return NextResponse.json({ tamm: true });
 }
 

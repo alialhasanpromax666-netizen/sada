@@ -24,6 +24,7 @@ export default function JadeedPage() {
   const router = useRouter();
   const [khatwa, setKhatwa] = useState(0);
   const [jari, setJari] = useState(false);
+  const [khata, setKhata] = useState("");
 
   // الحقول
   const [ism, setIsm] = useState("");
@@ -67,6 +68,7 @@ export default function JadeedPage() {
 
   async function intaj() {
     setJari(true);
+    setKhata("");
     try {
       const r = await fetch("/api/wukala", {
         method: "POST",
@@ -89,6 +91,8 @@ export default function JadeedPage() {
         }),
       });
       if (r.ok) router.push("/wukala");
+      const data = await r.json().catch(() => ({}));
+      setKhata(data.khata ?? `فشل الإنشاء (HTTP ${r.status})`);
     } finally {
       setJari(false);
     }
@@ -384,6 +388,7 @@ export default function JadeedPage() {
           </button>
         )}
       </div>
+      {khata && <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">{khata}</div>}
     </div>
   );
 }
