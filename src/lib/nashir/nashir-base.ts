@@ -1,4 +1,4 @@
-import type { NatijatNashr, NatijatIkhtibar, RamzManassa } from "@/lib/types";
+import type { NatijatNashr, NatijatIkhtibar, NatijatAtdaa, RamzManassa } from "@/lib/types";
 
 export abstract class Nashir {
   abstract readonly manassa: RamzManassa;
@@ -10,4 +10,6 @@ export abstract class Nashir {
   ): Promise<NatijatNashr>;
 
   abstract ikhtibar(miftah: string): Promise<NatijatIkhtibar>;
+
+  abstract jibAtdaa(maerifNashr: string, miftah: string): Promise<NatijatAtdaa | null>;
 }

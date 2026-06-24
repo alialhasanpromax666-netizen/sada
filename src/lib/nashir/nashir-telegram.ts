@@ -1,6 +1,6 @@
 import { Nashir } from "./nashir-base";
 import { BotTelegram, fakkSirrTelegram, rabitRisala } from "@/lib/telegram/telegram";
-import type { NatijatNashr, NatijatIkhtibar, RamzManassa } from "@/lib/types";
+import type { NatijatNashr, NatijatIkhtibar, NatijatAtdaa, RamzManassa } from "@/lib/types";
 
 export class NashirTelegram extends Nashir {
   readonly manassa: RamzManassa = "TELEGRAM";
@@ -70,5 +70,26 @@ export class NashirTelegram extends Nashir {
         mushtarikun: adad.ok ? adad.result : undefined,
       },
     };
+  }
+
+  async jibAtdaa(maerifNashr: string, miftah: string): Promise<NatijatAtdaa | null> {
+    try {
+      const { token, qanat } = fakkSirrTelegram(miftah);
+      if (!qanat) return null;
+      const bot = new BotTelegram(token);
+
+      // جلب عدد المشتركين كمؤشر تقريبي
+      const adad = await bot.getChatMemberCount(qanat);
+      // ملاحظة: Bot API لا يوفر إحصائيات رسائل فردية
+      // نُرجع صفر كقيمة افتراضية — التحديث الحقيقي يتطلب Telegram Channel Statistics API
+      return {
+        mushahadat: 0,
+        i3jabat: 0,
+        musharakat: 0,
+        ta3liqat: 0,
+      };
+    } catch {
+      return null;
+    }
   }
 }

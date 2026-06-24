@@ -188,6 +188,14 @@ export interface NatijatIkhtibar {
   tafasil?: Record<string, unknown>;
 }
 
+// ── نتيجة جلب بيانات الأداء ─────────────────────────────────
+export interface NatijatAtdaa {
+  mushahadat: number;
+  i3jabat: number;
+  musharakat: number;
+  ta3liqat: number;
+}
+
 // ── خصائص خدمة المفتاح (لواجهة خزنة المفاتيح) ───────────────
 export interface WasfKhidma {
   ramz: RamzKhidma;

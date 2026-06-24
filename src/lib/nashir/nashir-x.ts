@@ -1,5 +1,5 @@
 import { Nashir } from "./nashir-base";
-import type { NatijatNashr, NatijatIkhtibar, RamzManassa } from "@/lib/types";
+import type { NatijatNashr, NatijatIkhtibar, NatijatAtdaa, RamzManassa } from "@/lib/types";
 
 const QAEDA = "https://api.twitter.com/2";
 
@@ -68,6 +68,29 @@ export class NashirX extends Nashir {
       };
     } catch (e) {
       return { najah: false, risala: (e as Error).message };
+    }
+  }
+
+  async jibAtdaa(maerifNashr: string, miftah: string): Promise<NatijatAtdaa | null> {
+    try {
+      const radd = await fetch(
+        `${QAEDA}/tweets/${maerifNashr}?tweet.fields=public_metrics`,
+        { headers: { Authorization: `Bearer ${miftah}` } },
+      );
+      if (!radd.ok) return null;
+      const data = (await radd.json()) as {
+        data?: { public_metrics?: { impression_count: number; like_count: number; retweet_count: number; reply_count: number } };
+      };
+      const pm = data.data?.public_metrics;
+      if (!pm) return null;
+      return {
+        mushahadat: pm.impression_count,
+        i3jabat: pm.like_count,
+        musharakat: pm.retweet_count,
+        ta3liqat: pm.reply_count,
+      };
+    } catch {
+      return null;
     }
   }
 }

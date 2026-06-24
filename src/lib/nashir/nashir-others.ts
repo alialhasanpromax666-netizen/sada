@@ -1,5 +1,5 @@
 import { Nashir } from "./nashir-base";
-import type { NatijatNashr, NatijatIkhtibar, RamzManassa } from "@/lib/types";
+import type { NatijatNashr, NatijatIkhtibar, NatijatAtdaa, RamzManassa } from "@/lib/types";
 
 // ── لينكدإن ──────────────────────────────────────────────────
 export class NashirLinkedIn extends Nashir {
@@ -65,6 +65,29 @@ export class NashirLinkedIn extends Nashir {
       return { najah: false, risala: (e as Error).message };
     }
   }
+
+  async jibAtdaa(maerifNashr: string, miftah: string): Promise<NatijatAtdaa | null> {
+    try {
+      const radd = await fetch(
+        `https://api.linkedin.com/v2/socialActions/${encodeURIComponent(maerifNashr)}`,
+        { headers: { Authorization: `Bearer ${miftah}` } },
+      );
+      if (!radd.ok) return null;
+      const data = (await radd.json()) as {
+        likesSummary?: { totalLikes: number };
+        commentsSummary?: { totalFirstLevelComments: number };
+        sharesSummary?: { totalShares: number };
+      };
+      return {
+        mushahadat: 0,
+        i3jabat: data.likesSummary?.totalLikes ?? 0,
+        musharakat: data.sharesSummary?.totalShares ?? 0,
+        ta3liqat: data.commentsSummary?.totalFirstLevelComments ?? 0,
+      };
+    } catch {
+      return null;
+    }
+  }
 }
 
 // ── ميتا (إنستغرام/فيسبوك عبر Graph API) ─────────────────────
@@ -117,6 +140,10 @@ export class NashirMeta extends Nashir {
       return { najah: false, risala: (e as Error).message };
     }
   }
+
+  async jibAtdaa(): Promise<NatijatAtdaa | null> {
+    return null;
+  }
 }
 
 // ── تيك توك (Content Posting API) ────────────────────────────
@@ -146,5 +173,9 @@ export class NashirTikTok extends Nashir {
     } catch (e) {
       return { najah: false, risala: (e as Error).message };
     }
+  }
+
+  async jibAtdaa(): Promise<NatijatAtdaa | null> {
+    return null;
   }
 }
