@@ -77,14 +77,12 @@ export const MUZAWWIDUN: Record<MuzawwidAql, WasfMuzawwid> = {
     ism: "Bynara",
     ismLat: "Bynara",
     khidma: "BYNARA",
-    namudhajIftiradi: "mistral-large",
+    namudhajIftiradi: "mimo-v2.5-free",
     namadhijMuqtaraha: [
+      "mimo-v2.5-free",
+      "mimo-v2.5-pro-free",
       "mistral-large",
       "mistral-medium-3-5",
-      "claude-sonnet-4.5",
-      "claude-haiku-4.5",
-      "deepseek-3.2",
-      "glm-5",
     ],
   },
 };
