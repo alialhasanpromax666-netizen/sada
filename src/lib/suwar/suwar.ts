@@ -164,12 +164,18 @@ export async function preparePostImage(
 }
 
 /**
- * يحفظ صورة في مجلد public/suwar/
+ * يحفظ صورة — على Vercel يرجع data URL، محلياً يحفظ في public/suwar/
  */
 export async function saveImage(
   buffer: Buffer,
   prefix: string,
 ): Promise<string> {
+  // على Vercel (Serverless) — نرجع base64
+  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+    return `data:image/png;base64,${buffer.toString("base64")}`;
+  }
+
+  // محلياً — نحفظ في public/suwar/
   const dir = path.join(process.cwd(), "public", "suwar");
   await fs.mkdir(dir, { recursive: true });
 
