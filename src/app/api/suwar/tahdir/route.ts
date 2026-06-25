@@ -44,5 +44,12 @@ export async function POST(req: Request) {
     natayij.push({ rabit, ism: kalima });
   }
 
+  if (natayij.length === 0) {
+    return NextResponse.json(
+      { khata: `لم يتم العثور على صور للكلمة: "${kalimat[0]}"` },
+      { status: 404 },
+    );
+  }
+
   return NextResponse.json({ suwar: natayij });
 }

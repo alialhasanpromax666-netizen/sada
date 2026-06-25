@@ -205,6 +205,7 @@ function JadwalaContent() {
   // توليد صورة للمنشور
   async function tawlidSuora(matn: string, faHirIndex: number) {
     setJariSuwar((cur) => ({ ...cur, [faHirIndex]: true }));
+    setKhata("");
     try {
       const r = await fetch("/api/suwar/tahdir", {
         method: "POST",
@@ -215,9 +216,17 @@ function JadwalaContent() {
         }),
       });
       const d = await r.json();
+      if (!r.ok) {
+        setKhata(d.khata ?? `فشل توليد الصورة (HTTP ${r.status})`);
+        return;
+      }
       if (d.suwar?.[0]?.rabit) {
         setSuwarMuwallada((cur) => ({ ...cur, [faHirIndex]: d.suwar[0].rabit }));
+      } else {
+        setKhata("لم يتم العثور على صورة مناسبة.");
       }
+    } catch (e) {
+      setKhata((e as Error).message);
     } finally {
       setJariSuwar((cur) => ({ ...cur, [faHirIndex]: false }));
     }
