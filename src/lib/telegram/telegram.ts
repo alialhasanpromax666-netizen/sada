@@ -24,6 +24,7 @@ export interface RaddTelegram<T = unknown> {
   result?: T;
   description?: string;
   error_code?: number;
+  khata?: string;
 }
 
 /** هويّة البوت (getMe). */
@@ -135,13 +136,56 @@ export class BotTelegram {
     });
   }
 
-  /** إرسال صورة مع تعليق. */
-  sendPhoto(
+  /** إرسال صورة مع تعليق — يدعم URL عادي + base64 data URL. */
+  async sendPhoto(
     qanat: string,
     suraUrl: string,
     tawsif?: string,
     khiyarat?: { parse_mode?: "HTML" | "MarkdownV2"; disable_notification?: boolean },
-  ) {
+  ): Promise<RaddTelegram<RisalaTelegram>> {
+    // إذا كانت الصورة base64، نرفعها كملف
+    if (suraUrl.startsWith("data:image")) {
+      const boundary = `boundary${Date.now()}`;
+      const matches = suraUrl.match(/^data:image\/(\w+);base64,(.+)$/);
+      if (!matches) {
+        return { ok: false, khata: "صورة base64 غير صالحة." };
+      }
+      const ext = matches[1];
+      const base64Data = matches[2];
+      const buffer = Buffer.from(base64Data, "base64");
+      const filename = `sada-${Date.now()}.${ext}`;
+      
+      // بناء body multipart/form-data يدوياً
+      const parts: Buffer[] = [];
+      const addField = (name: string, value: string) => {
+        parts.push(Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="${name}"\r\n\r\n${value}\r\n`));
+      };
+      addField("chat_id", qanat);
+      if (tawsif) addField("caption", tawsif);
+      if (khiyarat?.parse_mode) addField("parse_mode", khiyarat.parse_mode);
+      
+      // إضافة الصورة كملف
+      parts.push(Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="photo"; filename="${filename}"\r\nContent-Type: image/${ext}\r\n\r\n`));
+      parts.push(buffer);
+      parts.push(Buffer.from(`\r\n--${boundary}--\r\n`));
+      
+      const body = Buffer.concat(parts);
+      
+      try {
+        const radd = await fetch(`${QAEDA}/bot${this.token}/sendPhoto`, {
+          method: "POST",
+          headers: {
+            "Content-Type": `multipart/form-data; boundary=${boundary}`,
+          },
+          body,
+        });
+        return (await radd.json()) as RaddTelegram<RisalaTelegram>;
+      } catch (e) {
+        return { ok: false, khata: (e as Error).message };
+      }
+    }
+    
+    // URL عادي — نرسله مباشرة
     return this.nida<RisalaTelegram>("sendPhoto", {
       chat_id: qanat,
       photo: suraUrl,

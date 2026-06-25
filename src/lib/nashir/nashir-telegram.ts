@@ -19,9 +19,21 @@ export class NashirTelegram extends Nashir {
     
     // إذا كانت هناك صورة، نرسلها مع النص
     if (wasait?.[0]) {
+      console.log("[NashirTelegram.nashr] إرسال صورة:", wasait[0].slice(0, 50) + "...");
       const radd = await bot.sendPhoto(qanat, wasait[0], matn);
       if (!radd.ok || !radd.result) {
-        return { najah: false, khata: radd.description ?? "فشل النشر على تيليغرام." };
+        console.log("[NashirTelegram.nashr] فشل إرسال الصورة:", radd.khata ?? radd.description);
+        // إذا فشل إرسال الصورة، نرسل النص فقط
+        const raddNass = await bot.sendMessage(qanat, matn);
+        if (!raddNass.ok || !raddNass.result) {
+          return { najah: false, khata: raddNass.description ?? "فشل النشر على تيليغرام." };
+        }
+        const messageId = raddNass.result.message_id;
+        return {
+          najah: true,
+          maerifNashr: String(messageId),
+          rabit: rabitRisala(qanat, messageId),
+        };
       }
       const messageId = radd.result.message_id;
       return {
