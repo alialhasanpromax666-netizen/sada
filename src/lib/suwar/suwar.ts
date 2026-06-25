@@ -17,21 +17,70 @@ const FRAME_COLOR_TOP = "#0066ff";
 const FRAME_COLOR_BOTTOM = "#003399";
 const TEXT_COLOR = "#00aaff";
 
+// خريطة تحويل المواضيع العربية إلى بحث إنجليزي
+const MAWAD_MAP: Record<string, string> = {
+  كريبتو: "cryptocurrency bitcoin",
+  بيتكوين: "bitcoin",
+  افتراضي: "virtual reality",
+  ذكاء_اصطناعي: "artificial intelligence",
+  تقنية: "technology",
+  أعمال: "business",
+  تسويق: "marketing",
+  مالية: "finance",
+  ريادة: "startup",
+  استثمار: "investment",
+  أرقام: "statistics data",
+  إحصاء: "statistics chart",
+  مشاريع: "business project",
+  نجاح: "success",
+  تحدي: "challenge",
+  مستقبل: "future",
+  رقمي: "digital",
+  تطوير: "development",
+  برمجة: "programming",
+  تجارة: "commerce",
+  اقتصاد: "economy",
+  سوق: "market",
+  منصة: "platform",
+  ربح: "profit",
+  خسارة: "loss",
+  مبيعات: "sales",
+  عملاء: "customers",
+  منتج: "product",
+  خدمة: "service",
+  جودة: "quality",
+  ابتكار: "innovation",
+};
+
+function arabicToEnglishQuery(text: string): string {
+  // البحث عن كلمات مفتاحية عربية واستبدالها
+  for (const [ar, en] of Object.entries(MAWAD_MAP)) {
+    if (text.includes(ar)) return en;
+  }
+  // إذا لم نجد شيئاً، نأخذ أول 3 كلمات إنجليزية
+  const english = text.replace(/[^\w\s]/g, "").split(/\s+/).filter(w => /^[a-zA-Z]+$/.test(w)).slice(0, 3).join(" ");
+  return english || "business technology";
+}
+
 interface ImageResult {
   buffer: Buffer;
   alt: string;
 }
 
 /**
- * يجلب صورة من Pexels حسبคำ مفتاحي.
+ * يجلب صورة من Pexels حسب كلمة مفتاحية.
  */
 export async function fetchFromPexels(
   query: string,
   apiKey: string,
 ): Promise<ImageResult | null> {
   try {
+    // تحويل الكلمات العربية إلى بحث إنجليزي مناسب لـ Pexels
+    const searchTerms = arabicToEnglishQuery(query);
+    console.log("[fetchFromPexels] البحث:", searchTerms);
+
     const res = await fetch(
-      `${PEXELS_API}?query=${encodeURIComponent(query)}&per_page=5&orientation=landscape`,
+      `${PEXELS_API}?query=${encodeURIComponent(searchTerms)}&per_page=5&orientation=landscape`,
       { headers: { Authorization: apiKey } },
     );
     if (!res.ok) return null;
