@@ -63,24 +63,18 @@ export async function applyFrame(
   const channel = options?.channel ?? "@sada_app";
 
   // بناء الإطار كـ SVG
-  const svgFrame = `
-    <svg width="${IMAGE_SIZE}" height="${IMAGE_SIZE}" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="frameGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style="stop-color:${FRAME_COLOR_TOP};stop-opacity:1" />
-          <stop offset="100%" style="stop-color:${FRAME_COLOR_BOTTOM};stop-opacity:1" />
-        </linearGradient>
-      </defs>
-      <rect width="${IMAGE_SIZE}" height="${IMAGE_SIZE}" fill="#000000"/>
-      <rect width="${IMAGE_SIZE}" height="${IMAGE_SIZE}" fill="none" stroke="url(#frameGrad)" stroke-width="${FRAME_WIDTH}"/>
-      <text x="${FRAME_WIDTH + 20}" y="${IMAGE_SIZE - 30}" fill="${TEXT_COLOR}" font-family="Arial, sans-serif" font-size="18" font-weight="bold">
-        ${url}
-      </text>
-      <text x="${FRAME_WIDTH + 20}" y="${IMAGE_SIZE - 8}" fill="${TEXT_COLOR}" font-family="Arial, sans-serif" font-size="18" font-weight="bold">
-        ${channel}
-      </text>
-    </svg>
-  `;
+  const svgFrame = `<svg width="${IMAGE_SIZE}" height="${IMAGE_SIZE}" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="frameGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="${FRAME_COLOR_TOP}" stop-opacity="1"/>
+        <stop offset="100%" stop-color="${FRAME_COLOR_BOTTOM}" stop-opacity="1"/>
+      </linearGradient>
+    </defs>
+    <rect width="${IMAGE_SIZE}" height="${IMAGE_SIZE}" fill="#000000"/>
+    <rect width="${IMAGE_SIZE}" height="${IMAGE_SIZE}" fill="none" stroke="url(#frameGrad)" stroke-width="${FRAME_WIDTH}"/>
+    <text x="${FRAME_WIDTH + 20}" y="${IMAGE_SIZE - 30}" fill="${TEXT_COLOR}" font-family="Arial,sans-serif" font-size="18" font-weight="bold">${url}</text>
+    <text x="${FRAME_WIDTH + 20}" y="${IMAGE_SIZE - 8}" fill="${TEXT_COLOR}" font-family="Arial,sans-serif" font-size="18" font-weight="bold">${channel}</text>
+  </svg>`;
 
   // حجم المنطقة المتاحة للصورة
   const regionWidth = IMAGE_SIZE - FRAME_WIDTH * 2;
