@@ -30,6 +30,7 @@ interface ManshurAard {
   hala: string;
   mawiidNashr: string | null;
   wakeel: { ism: string };
+  wasait?: string | null;
 }
 interface TahrirManshur {
   id: string;
@@ -58,6 +59,10 @@ function JadwalaContent() {
   const [matnTahrir, setMatnTahrir] = useState("");
   const [mawidTahrir, setMawidTahrir] = useState("");
   const [jariHifz, setJariHifz] = useState(false);
+
+  // الصور
+  const [suwarMuwallada, setSuwarMuwallada] = useState<Record<number, string>>({});
+  const [jariSuwar, setJariSuwar] = useState<Record<number, boolean>>({});
 
   // جلب الوكلاء
   useEffect(() => {
@@ -197,6 +202,27 @@ function JadwalaContent() {
     jalbManshurat();
   }
 
+  // توليد صورة للمنشور
+  async function tawlidSuora(matn: string, faHirIndex: number) {
+    setJariSuwar((cur) => ({ ...cur, [faHirIndex]: true }));
+    try {
+      const r = await fetch("/api/suwar/tahdir", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mawdu: matn.slice(0, 100),
+          kalimatMiftahiyah: [matn.split("\n")[0].slice(0, 50)],
+        }),
+      });
+      const d = await r.json();
+      if (d.suwar?.[0]?.rabit) {
+        setSuwarMuwallada((cur) => ({ ...cur, [faHirIndex]: d.suwar[0].rabit }));
+      }
+    } finally {
+      setJariSuwar((cur) => ({ ...cur, [faHirIndex]: false }));
+    }
+  }
+
   const hadAqsa = manassa ? MANASSAT[manassa as RamzManassa].hadAqsa : 280;
 
   return (
@@ -298,14 +324,31 @@ function JadwalaContent() {
             muwallada.map((matn, i) => {
               const tul = matn.length;
               const tajawuz = tul > hadAqsa;
+              const suraHalihiya = suwarMuwallada[i];
+              const jariSura = jariSuwar[i];
               return (
                 <div key={i} className="bitaqa animate-sariyan p-4">
+                  {suraHalihiya && (
+                    <img
+                      src={suraHalihiya}
+                      alt="صورة المنشور"
+                      className="mb-3 w-full rounded-xl object-cover"
+                      style={{ maxHeight: 300 }}
+                    />
+                  )}
                   <p className="whitespace-pre-wrap text-sm text-slate-200">{matn}</p>
                   <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-3">
                     <span className={`text-xs ${tajawuz ? "text-rose-400" : "text-slate-500"}`}>
                       {tul}/{hadAqsa} حرف
                     </span>
                     <div className="flex gap-2">
+                      <button
+                        className="zir-thanawi px-3 py-1.5 text-xs"
+                        onClick={() => tawlidSuora(matn, i)}
+                        disabled={jariSura}
+                      >
+                        {jariSura ? "جارٍ التوليد..." : "توليد صورة"}
+                      </button>
                       <button
                         className="zir-thanawi px-3 py-1.5 text-xs"
                         onClick={() => hifzAwNashr(matn, false)}
@@ -357,6 +400,13 @@ function JadwalaContent() {
                   key={p.id}
                   className="flex items-center gap-3 rounded-xl border border-white/5 bg-layli-900/40 p-3"
                 >
+                  {p.wasait && (
+                    <img
+                      src={p.wasait}
+                      alt=""
+                      className="h-12 w-12 shrink-0 rounded-lg object-cover"
+                    />
+                  )}
                   <span
                     className="grid h-9 w-9 shrink-0 place-items-center rounded-lg"
                     style={{ background: MANASSAT[mn].lawn + "22", color: MANASSAT[mn].lawn }}
