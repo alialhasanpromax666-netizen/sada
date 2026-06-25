@@ -6,7 +6,7 @@ const QAEDA = "https://api.twitter.com/2";
 export class NashirX extends Nashir {
   readonly manassa: RamzManassa = "X";
 
-  async nashr(matn: string, miftah: string): Promise<NatijatNashr> {
+  async nashr(matn: string, miftah: string, wasait?: string[]): Promise<NatijatNashr> {
     try {
       const radd = await fetch(`${QAEDA}/tweets`, {
         method: "POST",

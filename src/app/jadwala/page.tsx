@@ -136,13 +136,13 @@ function JadwalaContent() {
   }
 
   // إنشاء منشور ثم (اختياري) نشره فوراً
-  async function hifzAwNashr(matn: string, fawri: boolean) {
+  async function hifzAwNashr(matn: string, fawri: boolean, suraUrl?: string) {
     if (!wakeelId || !manassa) return;
     const mawiid = fawri ? null : afdalMawid(manassa as RamzManassa).toISOString();
     const r = await fetch("/api/manshurat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ wakeelId, manassa, matn, mawiidNashr: mawiid }),
+      body: JSON.stringify({ wakeelId, manassa, matn, mawiidNashr: mawiid, wasait: suraUrl }),
     });
     const d = await r.json();
     if (fawri && d.manshur?.id) {
@@ -360,13 +360,13 @@ function JadwalaContent() {
                       </button>
                       <button
                         className="zir-thanawi px-3 py-1.5 text-xs"
-                        onClick={() => hifzAwNashr(matn, false)}
+                        onClick={() => hifzAwNashr(matn, false, suraHalihiya)}
                       >
                         <AyqunaJadwala className="h-4 w-4" /> جدولة ذكية
                       </button>
                       <button
                         className="zir-asasi px-3 py-1.5 text-xs"
-                        onClick={() => hifzAwNashr(matn, true)}
+                        onClick={() => hifzAwNashr(matn, true, suraHalihiya)}
                       >
                         <AyqunaNashr className="h-4 w-4" /> نشر الآن
                       </button>

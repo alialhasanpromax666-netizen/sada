@@ -5,7 +5,7 @@ import type { NatijatNashr, NatijatIkhtibar, NatijatAtdaa, RamzManassa } from "@
 export class NashirLinkedIn extends Nashir {
   readonly manassa: RamzManassa = "LINKEDIN";
 
-  async nashr(matn: string, miftah: string): Promise<NatijatNashr> {
+  async nashr(matn: string, miftah: string, wasait?: string[]): Promise<NatijatNashr> {
     try {
       const muRadd = await fetch("https://api.linkedin.com/v2/userinfo", {
         headers: { Authorization: `Bearer ${miftah}` },
@@ -95,7 +95,7 @@ export class NashirMeta extends Nashir {
   // في الإنتاج، يُضبط ديناميكياً حسب المنصّة الفعلية المستدعاة.
   readonly manassa: RamzManassa = "INSTAGRAM";
 
-  async nashr(matn: string, miftah: string): Promise<NatijatNashr> {
+  async nashr(matn: string, miftah: string, wasait?: string[]): Promise<NatijatNashr> {
     // نشر إنستغرام عبر Graph API عملية من خطوتين:
     //   1) POST /{ig-user-id}/media       ← إنشاء حاوية وسائط (media container)
     //   2) POST /{ig-user-id}/media_publish ← نشر الحاوية
@@ -150,7 +150,7 @@ export class NashirMeta extends Nashir {
 export class NashirTikTok extends Nashir {
   readonly manassa: RamzManassa = "TIKTOK";
 
-  async nashr(matn: string, miftah: string): Promise<NatijatNashr> {
+  async nashr(matn: string, miftah: string, wasait?: string[]): Promise<NatijatNashr> {
     // نشر تيك توك يتطلّب فيديو عبر Content Posting API:
     //   1) POST /v2/video/query/    ← استعلام صلاحية النشر
     //   2) POST /v2/video/publish/  ← رفع الفيديو ونشره

@@ -5,7 +5,7 @@ import type { NatijatNashr, NatijatIkhtibar, NatijatAtdaa, RamzManassa } from "@
 export class NashirTelegram extends Nashir {
   readonly manassa: RamzManassa = "TELEGRAM";
 
-  async nashr(matn: string, miftah: string): Promise<NatijatNashr> {
+  async nashr(matn: string, miftah: string, wasait?: string[]): Promise<NatijatNashr> {
     const { token, qanat } = fakkSirrTelegram(miftah);
     if (!qanat) {
       return {
@@ -16,6 +16,22 @@ export class NashirTelegram extends Nashir {
     }
 
     const bot = new BotTelegram(token);
+    
+    // إذا كانت هناك صورة، نرسلها مع النص
+    if (wasait?.[0]) {
+      const radd = await bot.sendPhoto(qanat, wasait[0], matn);
+      if (!radd.ok || !radd.result) {
+        return { najah: false, khata: radd.description ?? "فشل النشر على تيليغرام." };
+      }
+      const messageId = radd.result.message_id;
+      return {
+        najah: true,
+        maerifNashr: String(messageId),
+        rabit: rabitRisala(qanat, messageId),
+      };
+    }
+    
+    // بدون صورة — نرسل نص فقط
     const radd = await bot.sendMessage(qanat, matn);
     if (!radd.ok || !radd.result) {
       return { najah: false, khata: radd.description ?? "فشل النشر على تيليغرام." };

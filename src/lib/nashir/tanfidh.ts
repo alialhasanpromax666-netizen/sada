@@ -72,7 +72,7 @@ export async function naffidhNashr(
   }
 
   // تنفيذ النشر عبر المحوّل المناسب.
-  const natija = await jalbNashir(manassa).nashr(manshur.matn, sirr);
+  const natija = await jalbNashir(manassa).nashr(manshur.matn, sirr, manshur.wasait ? [manshur.wasait] : undefined);
 
   // تحديث مؤشّرات استخدام المفتاح (أساس التدوير والمراقبة).
   await db.miftah.update({

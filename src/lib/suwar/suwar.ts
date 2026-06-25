@@ -17,49 +17,84 @@ const FRAME_COLOR_TOP = "#0066ff";
 const FRAME_COLOR_BOTTOM = "#003399";
 const TEXT_COLOR = "#00aaff";
 
-// خريطة تحويل المواضيع العربية إلى بحث إنجليزي
+// خريطة تحويل المواضيع العربية إلى بحث إنجليزي - صور تقنية فقط
 const MAWAD_MAP: Record<string, string> = {
-  كريبتو: "cryptocurrency bitcoin",
-  بيتكوين: "bitcoin",
-  افتراضي: "virtual reality",
-  ذكاء_اصطناعي: "artificial intelligence",
-  تقنية: "technology",
-  أعمال: "business",
-  تسويق: "marketing",
-  مالية: "finance",
-  ريادة: "startup",
-  استثمار: "investment",
-  أرقام: "statistics data",
-  إحصاء: "statistics chart",
-  مشاريع: "business project",
-  نجاح: "success",
-  تحدي: "challenge",
-  مستقبل: "future",
-  رقمي: "digital",
-  تطوير: "development",
-  برمجة: "programming",
-  تجارة: "commerce",
-  اقتصاد: "economy",
-  سوق: "market",
-  منصة: "platform",
-  ربح: "profit",
-  خسارة: "loss",
-  مبيعات: "sales",
-  عملاء: "customers",
-  منتج: "product",
-  خدمة: "service",
-  جودة: "quality",
-  ابتكار: "innovation",
+  كريبتو: "blockchain digital currency",
+  بيتكوين: "bitcoin crypto",
+  افتراضي: "virtual reality headset",
+  ذكاء_اصطناعي: "artificial intelligence robot",
+  تقنية: "technology computer",
+  أعمال: "business laptop",
+  تسويق: "digital marketing analytics",
+  مالية: "financial charts data",
+  ريادة: "startup office",
+  استثمار: "investment graph",
+  أرقام: "data analytics dashboard",
+  إحصاء: "statistics chart graph",
+  مشاريع: "business technology",
+  نجاح: "success growth chart",
+  تحدي: "challenge innovation",
+  مستقبل: "future technology",
+  رقمي: "digital transformation",
+  تطوير: "software development",
+  برمجة: "coding programming",
+  تجارة: "e-commerce digital",
+  اقتصاد: "economy data",
+  سوق: "stock market data",
+  منصة: "platform technology",
+  ربح: "profit growth",
+  خسارة: "loss decline",
+  مبيعات: "sales analytics",
+  عملاء: "customer data",
+  منتج: "product technology",
+  خدمة: "digital service",
+  جودة: "quality control",
+  ابتكار: "innovation tech",
+  ذكاء: "smart technology",
+  روبوت: "robot automation",
+  بيانات: "big data server",
+  سحابي: "cloud computing",
+  أمن: "cybersecurity",
+  شبكة: "network server",
+  هاتف: "smartphone mobile",
+  تطبيق: "app interface",
+  واجهة: "user interface design",
+  تصميم: "design technology",
+  إبداع: "creative technology",
+  أداة: "tech tools",
+  مبتكر: "innovative gadget",
+  حديث: "modern technology",
+  متقدم: "advanced technology",
+  عصري: "contemporary tech",
+  سريع: "fast speed technology",
+  قوي: "powerful technology",
+  ذكي: "smart device",
+  تحليل: "data analysis",
+  رسم: "data visualization",
+  مخطط: "flowchart diagram",
+  بيان: "chart presentation",
+  مؤشر: "metrics dashboard",
 };
+
+// كلمات مفتاحية تقنية للبحث当لا يوجد تطابق
+const TECH_DEFAULTS = [
+  "technology abstract",
+  "digital network",
+  "data visualization",
+  "cyberpunk technology",
+  "futuristic tech",
+  "code programming",
+  "server room",
+  "artificial intelligence",
+];
 
 function arabicToEnglishQuery(text: string): string {
   // البحث عن كلمات مفتاحية عربية واستبدالها
   for (const [ar, en] of Object.entries(MAWAD_MAP)) {
     if (text.includes(ar)) return en;
   }
-  // إذا لم نجد شيئاً، نأخذ أول 3 كلمات إنجليزية
-  const english = text.replace(/[^\w\s]/g, "").split(/\s+/).filter(w => /^[a-zA-Z]+$/.test(w)).slice(0, 3).join(" ");
-  return english || "business technology";
+  // اختيار عشوائي من التقنيات الافتراضية
+  return TECH_DEFAULTS[Math.floor(Math.random() * TECH_DEFAULTS.length)];
 }
 
 interface ImageResult {
@@ -68,7 +103,7 @@ interface ImageResult {
 }
 
 /**
- * يجلب صورة من Pexels حسب كلمة مفتاحية.
+ * يجلب صورة من Pexels حسب كلمة مفتاحية — صور تقنية فقط.
  */
 export async function fetchFromPexels(
   query: string,
@@ -77,10 +112,12 @@ export async function fetchFromPexels(
   try {
     // تحويل الكلمات العربية إلى بحث إنجليزي مناسب لـ Pexels
     const searchTerms = arabicToEnglishQuery(query);
-    console.log("[fetchFromPexels] البحث:", searchTerms);
+    // إضافة كلمات لاستبعاد الأشخاص
+    const fullQuery = `${searchTerms} abstract minimalist`;
+    console.log("[fetchFromPexels] البحث:", fullQuery);
 
     const res = await fetch(
-      `${PEXELS_API}?query=${encodeURIComponent(searchTerms)}&per_page=5&orientation=landscape`,
+      `${PEXELS_API}?query=${encodeURIComponent(fullQuery)}&per_page=10&orientation=landscape`,
       { headers: { Authorization: apiKey } },
     );
     if (!res.ok) return null;
@@ -88,7 +125,21 @@ export async function fetchFromPexels(
     const data = (await res.json()) as {
       photos?: { src: { large2x: string }; alt: string }[];
     };
-    const photo = data.photos?.[0];
+    
+    // تصفية الصور التي قد تحتوي أشخاصاً
+    const photos = data.photos?.filter(photo => {
+      const alt = (photo.alt ?? "").toLowerCase();
+      return !alt.includes("person") && 
+             !alt.includes("people") && 
+             !alt.includes("man") && 
+             !alt.includes("woman") && 
+             !alt.includes("face") &&
+             !alt.includes("portrait") &&
+             !alt.includes("child") &&
+             !alt.includes("group");
+    }) ?? [];
+    
+    const photo = photos[0] ?? data.photos?.[0];
     if (!photo) return null;
 
     const imgRes = await fetch(photo.src.large2x);

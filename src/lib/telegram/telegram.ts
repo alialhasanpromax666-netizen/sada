@@ -135,6 +135,21 @@ export class BotTelegram {
     });
   }
 
+  /** إرسال صورة مع تعليق. */
+  sendPhoto(
+    qanat: string,
+    suraUrl: string,
+    tawsif?: string,
+    khiyarat?: { parse_mode?: "HTML" | "MarkdownV2"; disable_notification?: boolean },
+  ) {
+    return this.nida<RisalaTelegram>("sendPhoto", {
+      chat_id: qanat,
+      photo: suraUrl,
+      caption: tawsif ?? "",
+      ...khiyarat,
+    });
+  }
+
   /** تثبيت رسالة في أعلى القناة. */
   pinChatMessage(qanat: string, messageId: number, sami3?: boolean) {
     return this.nida<boolean>("pinChatMessage", {

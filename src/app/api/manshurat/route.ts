@@ -32,11 +32,12 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const { wakeelId, manassa, matn, mawiidNashr } = (await req.json()) as {
+  const { wakeelId, manassa, matn, mawiidNashr, wasait } = (await req.json()) as {
     wakeelId?: string;
     manassa?: string;
     matn?: string;
     mawiidNashr?: string | null;
+    wasait?: string;
   };
 
   if (!wakeelId || !manassa || !matn) {
@@ -63,6 +64,7 @@ export async function POST(req: Request) {
       matn,
       mawiidNashr: mawiidNashr ? new Date(mawiidNashr) : null,
       hala: mawiidNashr ? "MAJDWAL" : "MUSAWWADA",
+      wasait: wasait ?? null,
     },
   });
 
