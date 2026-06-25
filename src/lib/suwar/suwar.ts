@@ -188,47 +188,41 @@ export async function fetchFromPexels(
 }
 
 /**
- * ينشئ الإطار الأزرق ويضع الصورة في وسطه.
+ * ينشئ الإطار الأزرق — خلفية سوداء + نصوص في الأسفل.
  */
 export async function applyFrame(
-  imageBuffer: Buffer,
   options?: { url?: string; channel?: string },
 ): Promise<Buffer> {
-  const url = options?.url ?? "sada.app";
+  const url = options?.url ?? "https://sada.app";
   const channel = options?.channel ?? "@sada_app";
 
-  // بناء الإطار كـ SVG
+  // بناء الإطار كـ SVG — خلفية سوداء بالكامل مع نصوص أسفل
   const svgFrame = `<svg width="${IMAGE_SIZE}" height="${IMAGE_SIZE}" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="frameGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="${FRAME_COLOR_TOP}" stop-opacity="1"/>
-        <stop offset="100%" stop-color="${FRAME_COLOR_BOTTOM}" stop-opacity="1"/>
-      </linearGradient>
-    </defs>
-    <rect width="${IMAGE_SIZE}" height="${IMAGE_SIZE}" fill="#000000"/>
-    <rect width="${IMAGE_SIZE}" height="${IMAGE_SIZE}" fill="none" stroke="url(#frameGrad)" stroke-width="${FRAME_WIDTH}"/>
-    <text x="${FRAME_WIDTH + 20}" y="${IMAGE_SIZE - 30}" fill="${TEXT_COLOR}" font-family="Arial,sans-serif" font-size="18" font-weight="bold">${url}</text>
-    <text x="${FRAME_WIDTH + 20}" y="${IMAGE_SIZE - 8}" fill="${TEXT_COLOR}" font-family="Arial,sans-serif" font-size="18" font-weight="bold">${channel}</text>
-  </svg>`;
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="${IMAGE_SIZE}" y2="${IMAGE_SIZE}" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0055ff"/>
+      <stop offset="100%" stop-color="#001133"/>
+    </linearGradient>
+  </defs>
+  <!-- خلفية الإطار الزرقاء -->
+  <rect width="${IMAGE_SIZE}" height="${IMAGE_SIZE}" fill="url(#bg)"/>
+  <!-- المربع الأسود الداخلي -->
+  <rect x="${FRAME_WIDTH}" y="${FRAME_WIDTH}" width="${IMAGE_SIZE - FRAME_WIDTH * 2}" height="${IMAGE_SIZE - FRAME_WIDTH * 2}" fill="#000000"/>
+  <!-- أيقونة المونيتور -->
+  <rect x="${FRAME_WIDTH + 20}" y="${IMAGE_SIZE - 65}" width="24" height="18" rx="2" fill="none" stroke="${TEXT_COLOR}" stroke-width="2"/>
+  <line x1="${FRAME_WIDTH + 20}" y1="${IMAGE_SIZE - 43}" x2="${FRAME_WIDTH + 44}" y2="${IMAGE_SIZE - 43}" stroke="${TEXT_COLOR}" stroke-width="2"/>
+  <line x1="${FRAME_WIDTH + 32}" y1="${IMAGE_SIZE - 43}" x2="${FRAME_WIDTH + 32}" y2="${IMAGE_SIZE - 38}" stroke="${TEXT_COLOR}" stroke-width="2"/>
+  <!-- رابط الموقع -->
+  <text x="${FRAME_WIDTH + 52}" y="${IMAGE_SIZE - 50}" fill="${TEXT_COLOR}" font-family="Arial,sans-serif" font-size="16" font-weight="bold">${url}</text>
+  <!-- أيقونة تيليغرام -->
+  <circle cx="${FRAME_WIDTH + 32}" cy="${IMAGE_SIZE - 25}" r="12" fill="none" stroke="${TEXT_COLOR}" stroke-width="2"/>
+  <path d="M${FRAME_WIDTH + 26} ${IMAGE_SIZE - 25} l4 2 l8 -4 l-1 8 l-5 -2 l-3 2 l-1 -3 l5 -2 z" fill="${TEXT_COLOR}"/>
+  <!-- حساب تيليغرام -->
+  <text x="${FRAME_WIDTH + 52}" y="${IMAGE_SIZE - 21}" fill="${TEXT_COLOR}" font-family="Arial,sans-serif" font-size="16" font-weight="bold">${channel}</text>
+</svg>`;
 
-  // حجم المنطقة المتاحة للصورة
-  const regionWidth = IMAGE_SIZE - FRAME_WIDTH * 2;
-  const regionHeight = IMAGE_SIZE - FRAME_WIDTH * 2 - TEXT_AREA_HEIGHT;
-
-  // تجهيز الصورة الأصلية
-  const resized = await sharp(imageBuffer)
-    .resize(regionWidth, regionHeight, { fit: "cover", position: "center" })
-    .toBuffer();
-
-  // دمج الصورة مع الإطار
+  // إنشاء الصورة من SVG مباشرة
   const result = await sharp(Buffer.from(svgFrame))
-    .composite([
-      {
-        input: resized,
-        left: FRAME_WIDTH,
-        top: FRAME_WIDTH,
-      },
-    ])
     .png()
     .toBuffer();
 
@@ -236,17 +230,12 @@ export async function applyFrame(
 }
 
 /**
- * يجلب صورة من Pexels ويضع عليها الإطار.
+ * ينشئ صورة الإطار (بدون صورة من Pexels).
  */
-export async function preparePostImage(
-  query: string,
-  pexelsApiKey: string,
+export async function createFrameImage(
   options?: { url?: string; channel?: string },
-): Promise<Buffer | null> {
-  const img = await fetchFromPexels(query, pexelsApiKey);
-  if (!img) return null;
-
-  return applyFrame(img.buffer, options);
+): Promise<Buffer> {
+  return applyFrame(options);
 }
 
 /**

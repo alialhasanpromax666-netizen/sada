@@ -211,8 +211,8 @@ function JadwalaContent() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          mawdu: matn.slice(0, 100),
-          kalimatMiftahiyah: [matn.split("\n")[0].slice(0, 50)],
+          url: "https://blueprint-studio.xo.je",
+          qanat: "@blueprint_studio",
         }),
       });
       const d = await r.json();
@@ -223,7 +223,7 @@ function JadwalaContent() {
       if (d.suwar?.[0]?.rabit) {
         setSuwarMuwallada((cur) => ({ ...cur, [faHirIndex]: d.suwar[0].rabit }));
       } else {
-        setKhata("لم يتم العثور على صورة مناسبة.");
+        setKhata("لم يتم إنشاء الإطار.");
       }
     } catch (e) {
       setKhata((e as Error).message);
