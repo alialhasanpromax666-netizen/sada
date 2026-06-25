@@ -141,14 +141,24 @@ function JadwalaContent() {
     });
     const d = await r.json();
     if (fawri && d.manshur?.id) {
-      await fetch(`/api/manshurat/${d.manshur.id}/nashr`, { method: "POST" });
+      const rn = await fetch(`/api/manshurat/${d.manshur.id}/nashr`, { method: "POST" });
+      const dn = await rn.json();
+      if (!dn.najah) {
+        setKhata(dn.khata ?? "فشل النشر");
+      }
     }
     setMuwallada((cur) => cur.filter((x) => x !== matn));
     jalbManshurat();
   }
 
   async function nashrMawjud(id: string) {
-    await fetch(`/api/manshurat/${id}/nashr`, { method: "POST" });
+    const r = await fetch(`/api/manshurat/${id}/nashr`, { method: "POST" });
+    const d = await r.json();
+    if (!d.najah) {
+      setKhata(d.khata ?? "فشل النشر");
+    } else {
+      setKhata("");
+    }
     jalbManshurat();
   }
 
