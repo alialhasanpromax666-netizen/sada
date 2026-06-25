@@ -19,82 +19,95 @@ const TEXT_COLOR = "#00aaff";
 
 // خريطة تحويل المواضيع العربية إلى بحث إنجليزي - صور تقنية فقط
 const MAWAD_MAP: Record<string, string> = {
-  كريبتو: "blockchain digital currency",
-  بيتكوين: "bitcoin crypto",
-  افتراضي: "virtual reality headset",
+  // كريبتو وعملات رقمية
+  كريبتو: "bitcoin cryptocurrency chart",
+  بيتكوين: "bitcoin crypto coin",
+  عملة: "digital currency coin",
+  عملات: "cryptocurrency exchange",
+  رقمية: "digital technology",
+  بلوكشين: "blockchain network",
+  decentralized: "decentralized network",
+  
+  // ذكاء اصطناعي
   ذكاء_اصطناعي: "artificial intelligence robot",
-  تقنية: "technology computer",
-  أعمال: "business laptop",
-  تسويق: "digital marketing analytics",
-  مالية: "financial charts data",
-  ريادة: "startup office",
-  استثمار: "investment graph",
-  أرقام: "data analytics dashboard",
-  إحصاء: "statistics chart graph",
-  مشاريع: "business technology",
-  نجاح: "success growth chart",
-  تحدي: "challenge innovation",
-  مستقبل: "future technology",
-  رقمي: "digital transformation",
-  تطوير: "software development",
-  برمجة: "coding programming",
-  تجارة: "e-commerce digital",
-  اقتصاد: "economy data",
-  سوق: "stock market data",
-  منصة: "platform technology",
-  ربح: "profit growth",
-  خسارة: "loss decline",
-  مبيعات: "sales analytics",
-  عملاء: "customer data",
-  منتج: "product technology",
-  خدمة: "digital service",
-  جودة: "quality control",
-  ابتكار: "innovation tech",
   ذكاء: "smart technology",
+  ai: "artificial intelligence",
   روبوت: "robot automation",
-  بيانات: "big data server",
-  سحابي: "cloud computing",
-  أمن: "cybersecurity",
-  شبكة: "network server",
-  هاتف: "smartphone mobile",
-  تطبيق: "app interface",
+  آلي: "automation machine",
+  
+  // تقنية وبرمجة
+  تقنية: "technology computer screen",
+  برمجة: "code programming screen",
+  كود: "coding screen developer",
+  تطوير: "software development",
+  تطبيق: "mobile app interface",
+  منصة: "platform dashboard",
   واجهة: "user interface design",
   تصميم: "design technology",
-  إبداع: "creative technology",
-  أداة: "tech tools",
-  مبتكر: "innovative gadget",
-  حديث: "modern technology",
-  متقدم: "advanced technology",
-  عصري: "contemporary tech",
-  سريع: "fast speed technology",
-  قوي: "powerful technology",
-  ذكي: "smart device",
-  تحليل: "data analysis",
-  رسم: "data visualization",
+  
+  // بيانات وأمن
+  بيانات: "big data server",
+  سحابي: "cloud computing server",
+  أمن: "cybersecurity shield",
+  شبكة: "network server room",
+  سيرفر: "server room data",
+  
+  // أعمال ومالية
+  أعمال: "business analytics laptop",
+  مالية: "financial chart graph",
+  استثمار: "investment growth chart",
+  أرقام: "data analytics dashboard",
+  إحصاء: "statistics chart graph",
+  ربح: "profit growth chart",
+  مبيعات: "sales analytics chart",
+  تسويق: "digital marketing screen",
+  اقتصاد: "economy market data",
+  سوق: "stock market graph",
+  
+  // مشاريع وريادة
+  مشاريع: "startup technology office",
+  ريادة: "entrepreneurship innovation",
+  نجاح: "success growth chart",
+  ابتكار: "innovation technology",
+  
+  // أجهزة
+  هاتف: "smartphone technology",
+  لابتوب: "laptop computer",
+  جهاز: "tech device gadget",
+  
+  // مخططات ورسوم
+  رسم: "data visualization chart",
   مخطط: "flowchart diagram",
   بيان: "chart presentation",
-  مؤشر: "metrics dashboard",
+  مؤشر: "metrics dashboard analytics",
+  تحليل: "data analysis screen",
 };
 
-// كلمات مفتاحية تقنية للبحث当لا يوجد تطابق
+// كلمات مفتاحية تقنية افتراضية
 const TECH_DEFAULTS = [
-  "technology abstract",
-  "digital network",
-  "data visualization",
-  "cyberpunk technology",
-  "futuristic tech",
-  "code programming",
-  "server room",
-  "artificial intelligence",
+  "technology abstract blue",
+  "digital network nodes",
+  "data visualization dark",
+  "futuristic tech interface",
+  "code programming dark",
+  "server room blue light",
+  "artificial intelligence brain",
+  "cybersecurity digital lock",
 ];
 
 function arabicToEnglishQuery(text: string): string {
   // البحث عن كلمات مفتاحية عربية واستبدالها
+  const lowerText = text.toLowerCase();
   for (const [ar, en] of Object.entries(MAWAD_MAP)) {
-    if (text.includes(ar)) return en;
+    if (lowerText.includes(ar)) {
+      console.log(`[arabicToEnglishQuery] وجدت "${ar}" → "${en}"`);
+      return en;
+    }
   }
   // اختيار عشوائي من التقنيات الافتراضية
-  return TECH_DEFAULTS[Math.floor(Math.random() * TECH_DEFAULTS.length)];
+  const defaultQuery = TECH_DEFAULTS[Math.floor(Math.random() * TECH_DEFAULTS.length)];
+  console.log(`[arabicToEnglishQuery] لا توجد كلمة مفتاحية، استخدام افتراضي: "${defaultQuery}"`);
+  return defaultQuery;
 }
 
 interface ImageResult {
@@ -112,42 +125,64 @@ export async function fetchFromPexels(
   try {
     // تحويل الكلمات العربية إلى بحث إنجليزي مناسب لـ Pexels
     const searchTerms = arabicToEnglishQuery(query);
-    // إضافة كلمات لاستبعاد الأشخاص
-    const fullQuery = `${searchTerms} abstract minimalist`;
-    console.log("[fetchFromPexels] البحث:", fullQuery);
+    // لا نضيف كلمات إضافية - البحث الأصلي كافٍ
+    console.log("[fetchFromPexels] البحث:", searchTerms);
 
     const res = await fetch(
-      `${PEXELS_API}?query=${encodeURIComponent(fullQuery)}&per_page=10&orientation=landscape`,
+      `${PEXELS_API}?query=${encodeURIComponent(searchTerms)}&per_page=15&orientation=landscape&size=large`,
       { headers: { Authorization: apiKey } },
     );
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.log("[fetchFromPexels] خطأ HTTP:", res.status);
+      return null;
+    }
 
     const data = (await res.json()) as {
       photos?: { src: { large2x: string }; alt: string }[];
     };
     
-    // تصفية الصور التي قد تحتوي أشخاصاً
+    console.log(`[fetchFromPexels] وجدت ${data.photos?.length ?? 0} صور`);
+    
+    // تصفية الصور التي قد تحتوي أشخاصاً أو طبيعة
     const photos = data.photos?.filter(photo => {
       const alt = (photo.alt ?? "").toLowerCase();
-      return !alt.includes("person") && 
-             !alt.includes("people") && 
-             !alt.includes("man") && 
-             !alt.includes("woman") && 
-             !alt.includes("face") &&
-             !alt.includes("portrait") &&
-             !alt.includes("child") &&
-             !alt.includes("group");
+      // استبعاد صور الأشخاص
+      if (alt.includes("person") || alt.includes("people") || 
+          alt.includes("man") || alt.includes("woman") || 
+          alt.includes("face") || alt.includes("portrait") ||
+          alt.includes("child") || alt.includes("group") ||
+          alt.includes("boy") || alt.includes("girl") ||
+          alt.includes("male") || alt.includes("female")) {
+        return false;
+      }
+      // استبعاد صور الطبيعة
+      if (alt.includes("nature") || alt.includes("forest") || 
+          alt.includes("mountain") || alt.includes("ocean") ||
+          alt.includes("beach") || alt.includes("sky") ||
+          alt.includes("tree") || alt.includes("flower") ||
+          alt.includes("animal") || alt.includes("dog") ||
+          alt.includes("cat") || alt.includes("bird")) {
+        return false;
+      }
+      return true;
     }) ?? [];
     
+    console.log(`[fetchFromPexels] بعد التصفية: ${photos.length} صور`);
+    
     const photo = photos[0] ?? data.photos?.[0];
-    if (!photo) return null;
+    if (!photo) {
+      console.log("[fetchFromPexels] لا توجد صور مناسبة");
+      return null;
+    }
 
+    console.log("[fetchFromPexels] الصورة المختارة:", photo.alt);
     const imgRes = await fetch(photo.src.large2x);
     if (!imgRes.ok) return null;
 
     const buffer = Buffer.from(await imgRes.arrayBuffer());
     return { buffer, alt: photo.alt ?? query };
-  } catch {
+  } catch (e) {
+    console.error("[fetchFromPexels] خطأ:", e);
     return null;
   }
 }
