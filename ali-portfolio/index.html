@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>علي الحسن — خبير الذكاء الاصطناعي</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#f7fbfc;
+      --card:#ffffff;
+      --muted:#667085;
+      --text:#0f1724;
+      --accent:#0aa89e;
+      --accent-2:#0b8dd6;
+      --glass:rgba(11,168,158,0.08);
+      --radius:12px;
+    }
+    html{scroll-behavior:smooth}
+    body{
+      font-family:'Tajawal', 'Poppins', sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.6;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    a{color:inherit;text-decoration:none}
+    .container{max-width:1100px;margin:0 auto;padding:2rem}
+
+    /* Nav */
+    nav{position:fixed;inset-inline:0;top:0;background:rgba(255,255,255,0.7);backdrop-filter:blur(6px);border-bottom:1px solid rgba(15,23,36,0.04);padding:1rem 2rem;z-index:50}
+    .nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+    .logo{font-weight:700;font-family:'Poppins',sans-serif;color:var(--text);font-size:1.05rem}
+    .nav-links{display:flex;gap:1.25rem}
+    .nav-links a{color:var(--muted);font-weight:500;padding:0.35rem 0.5rem;border-radius:8px}
+    .nav-links a:hover{color:var(--accent)}
+
+    /* Hero */
+    .hero{padding:8rem 1rem 6rem}
+    .hero-grid{display:grid;grid-template-columns:1fr 380px;gap:2rem;align-items:center}
+    @media(max-width:900px){.hero-grid{grid-template-columns:1fr;padding-bottom:2rem}}
+    .hero-card{background:linear-gradient(180deg,#fff,#fbfeff);border-radius:var(--radius);padding:2.5rem;box-shadow:0 10px 30px rgba(15,23,36,0.06)}
+    .hero-title{font-family:'Poppins',sans-serif;font-weight:700;font-size:2rem;margin-bottom:0.6rem;color:var(--text)}
+    .hero-sub{color:var(--muted);margin-bottom:1rem}
+    .hero-cta{display:flex;gap:1rem;margin-top:1.25rem}
+    .btn{padding:0.9rem 1.25rem;border-radius:10px;border:1px solid transparent;font-weight:600;cursor:pointer}
+    .btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff}
+    .btn-ghost{background:transparent;border-color:rgba(15,23,36,0.06);color:var(--text)}
+
+    .profile-card{display:flex;flex-direction:column;align-items:center;gap:1rem;padding:1.75rem;border-radius:12px;background:var(--card);box-shadow:0 12px 30px rgba(11,13,25,0.04)}
+    .avatar{width:140px;height:140px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;font-family:'Poppins',sans-serif;font-size:3rem;font-weight:700}
+    .role{text-align:center}
+    .role h4{margin-bottom:0.25rem;font-weight:700}
+    .role p{color:var(--muted);font-size:0.95rem}
+
+    /* Sections */
+    .section{padding:6rem 1rem}
+    .section-header{max-width:800px;margin:0 auto;text-align:center;margin-bottom:3rem}
+    .section-tag{display:inline-block;color:var(--accent);font-weight:700;margin-bottom:0.6rem}
+    .section-title{font-size:1.6rem;font-weight:700}
+
+    .card{background:var(--card);border-radius:12px;padding:1.5rem;box-shadow:0 8px 24px rgba(15,23,36,0.04)}
+    .about-grid{display:grid;grid-template-columns:380px 1fr;gap:2rem;align-items:center}
+    @media(max-width:900px){.about-grid{grid-template-columns:1fr}}
+    .avatar-large{width:100%;height:300px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#eafefb);display:flex;align-items:center;justify-content:center;color:#fff;font-size:3rem}
+    .stats{display:flex;gap:1rem;margin-top:1rem}
+    .stat{flex:1;background:var(--glass);padding:1rem;border-radius:10px;text-align:center}
+    .stat .num{font-weight:700;color:var(--text);font-size:1.1rem}
+
+    .skills-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
+    .skill-badge{display:inline-block;padding:0.35rem 0.7rem;border-radius:999px;background:rgba(11,168,158,0.1);color:var(--accent);font-weight:600;margin-right:0.5rem;margin-top:0.5rem}
+
+    .projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem}
+    .project-thumb{height:160px;border-radius:10px;background:linear-gradient(135deg,#eef8f7,#fbffff);display:flex;align-items:center;justify-content:center;color:var(--accent);font-weight:700;font-size:1.25rem}
+
+    .timeline{max-width:800px;margin:0 auto}
+    .timeline-item{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid rgba(15,23,36,0.03)}
+    .timeline-date{width:120px;color:var(--muted);font-weight:600}
+
+    .contact-grid{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
+    .contact-card{display:inline-flex;align-items:center;gap:0.75rem;padding:0.9rem 1.2rem;border-radius:10px;background:var(--card);box-shadow:0 8px 22px rgba(15,23,36,0.04)}
+
+    footer{padding:2.5rem 1rem;text-align:center;color:var(--muted);font-size:0.95rem;border-top:1px solid rgba(15,23,36,0.03)}
+
+    /* reveal */
+    .reveal{opacity:0;transform:translateY(16px);transition:all 0.6s cubic-bezier(.16,1,.3,1)}
+    .reveal.active{opacity:1;transform:none}
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-inner container">
+      <div class="logo">علي الحسن</div>
+      <div class="nav-links">
+        <a href="#about">عني</a>
+        <a href="#skills">المهارات</a>
+        <a href="#projects">المشاريع</a>
+        <a href="#experience">الخبرة</a>
+        <a href="#contact">تواصل</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <header class="hero container" id="hero">
+      <div class="hero-grid">
+        <div class="hero-card reveal">
+          <p class="hero-sub">مرحباً — أنا</p>
+          <h1 class="hero-title">علي الحسن</h1>
+          <p>خبير ذكيّة صناعيّة ومهندس أنظمة تعلم الآلة. أعمل على تصميم ونشر حلول عملية تُسهِم في اتخاذ قرارات مبنية على البيانات.</p>
+          <div class="hero-cta">
+            <button class="btn btn-primary" onclick="document.getElementById('projects').scrollIntoView({behavior:'smooth'})">عرض المشاريع</button>
+            <button class="btn btn-ghost" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">تواصل</button>
+          </div>
+        </div>
+        <aside class="profile-card reveal">
+          <div class="avatar" aria-hidden="true">ع</div>
+          <div class="role">
+            <h4>خبير ذكاء اصطناعي</h4>
+            <p>أكثر من 8 سنوات في بناء حلول تعلم آلي للمنتجات والخدمات.</p>
+          </div>
+        </aside>
+      </div>
+    </header>
+
+    <section class="section about" id="about">
+      <div class="section-header reveal">
+        <div class="section-tag">نبذة</div>
+        <h2 class="section-title">من أنا</h2>
+      </div>
+      <div class="about-grid container">
+        <div class="card avatar-large reveal">
+          <!-- Simple abstract graphic without emoji -->
+          <svg width="100%" height="100%" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="border-radius:12px;display:block">
+            <defs>
+              <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0%" stop-color="#0aa89e" stop-opacity="0.95"/>
+                <stop offset="100%" stop-color="#eafefb" stop-opacity="0.95"/>
+              </linearGradient>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#g)"/>
+            <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="Poppins, Tajawal, sans-serif" font-size="96" fill="#ffffff" opacity="0.95">ع</text>
+          </svg>
+        </div>
+        <div class="card reveal">
+          <h3 style="margin-bottom:0.5rem">علي الحسن — خبير ذكاء اصطناعي</h3>
+          <p style="color:var(--muted)">أعمل على تحويل البيانات إلى منتجات وخدمات فعّالة. خبرتي تشمل بناء نماذج إنتاجية، تصميم خطوط أنابيب بيانات، وإنشاء منصات نشر مستقرة.</p>
+          <div class="stats" aria-hidden="true">
+            <div class="stat">
+              <div class="num">+50</div>
+              <div class="muted" style="color:var(--muted);margin-top:0.25rem">مشروع منجز</div>
+            </div>
+            <div class="stat">
+              <div class="num">+8</div>
+              <div class="muted" style="color:var(--muted);margin-top:0.25rem">سنوات خبرة</div>
+            </div>
+            <div class="stat">
+              <div class="num">+30</div>
+              <div class="muted" style="color:var(--muted);margin-top:0.25rem">عملاء</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="skills">
+      <div class="section-header reveal">
+        <div class="section-tag">قدرات</div>
+        <h2 class="section-title">المهارات التقنية</h2>
+      </div>
+      <div class="container skills-grid reveal">
+        <div class="card">
+          <h4>تعلم الآلة</h4>
+          <p style="color:var(--muted);margin-top:0.5rem">نماذج تنبؤية، تصنيف، وميزات هندسية متقدمة.</p>
+          <div style="margin-top:1rem">
+            <span class="skill-badge">Python</span><span class="skill-badge">Scikit-learn</span><span class="skill-badge">XGBoost</span>
+          </div>
+        </div>
+        <div class="card">
+          <h4>التعلم العميق</h4>
+          <p style="color:var(--muted);margin-top:0.5rem">تصميم شبكات عصبية للرؤية الحاسوبية ومعالجة اللغات الطبيعية.</p>
+          <div style="margin-top:1rem">
+            <span class="skill-badge">PyTorch</span><span class="skill-badge">TensorFlow</span><span class="skill-badge">Keras</span>
+          </div>
+        </div>
+        <div class="card">
+          <h4>نشر النماذج</h4>
+          <p style="color:var(--muted);margin-top:0.5rem">منصات إنتاج وMLOps، حاويات، وموازنة أحمال.</p>
+          <div style="margin-top:1rem">
+            <span class="skill-badge">Docker</span><span class="skill-badge">AWS</span><span class="skill-badge">CI/CD</span>
+          </div>
+        </div>
+        <div class="card">
+          <h4>معالجة اللغة الطبيعية</h4>
+          <p style="color:var(--muted);margin-top:0.5rem">نماذج فهم وتوليد نصوص قابلة للتفسير.</p>
+          <div style="margin-top:1rem">
+            <span class="skill-badge">Transformers</span><span class="skill-badge">BERT</span><span class="skill-badge">GPT</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section projects" id="projects">
+      <div class="section-header reveal">
+        <div class="section-tag">محفظة</div>
+        <h2 class="section-title">مشاريع مختارة</h2>
+      </div>
+      <div class="container projects-grid reveal">
+        <div class="card">
+          <div class="project-thumb">مساعد مبيعات ذكي</div>
+          <div style="margin-top:1rem">
+            <div style="color:var(--muted);font-weight:700">نظام محادثة للعملاء</div>
+            <p style="color:var(--muted);margin-top:0.5rem">نظام يعتمد على نماذج اللغة لتحسين تجربة الدعم وزيادة التحويلات.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="project-thumb">نظام مراقبة</div>
+          <div style="margin-top:1rem">
+            <div style="color:var(--muted);font-weight:700">رؤية حاسوبية للفيديو</div>
+            <p style="color:var(--muted);margin-top:0.5rem">كشف التالي عن الأحداث الشاذة بدقة عالية في الوقت الحقيقي.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="project-thumb">تنبؤ الطلب</div>
+          <div style="margin-top:1rem">
+            <div style="color:var(--muted);font-weight:700">نماذج توقعات الأعمال</div>
+            <p style="color:var(--muted);margin-top:0.5rem">تخفيض التكاليف وتحسين سلسلة التوريد عبر نماذج موثوقة.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section experience" id="experience">
+      <div class="section-header reveal">
+        <div class="section-tag">سيرة</div>
+        <h2 class="section-title">الخبرة المهنية</h2>
+      </div>
+      <div class="timeline reveal">
+        <div class="timeline-item">
+          <div class="timeline-date">2022 — الآن</div>
+          <div>
+            <div style="font-weight:700">كبير مهندسي الذكاء الاصطناعي</div>
+            <div style="color:var(--muted);margin-top:0.25rem">شركة تقنية المستقبل — قيادة فريق وبناء منصات إنتاجية.</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">2020 — 2022</div>
+          <div>
+            <div style="font-weight:700">مهندس ذكاء اصطناعي أول</div>
+            <div style="color:var(--muted);margin-top:0.25rem">مؤسسة الابتكار الرقمي — تطوير نماذج تعلم عميق للتوصية والتحليل.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section contact" id="contact">
+      <div class="section-header reveal">
+        <div class="section-tag">تواصل</div>
+        <h2 class="section-title">لنبدأ</h2>
+      </div>
+      <div class="container contact-grid reveal">
+        <a class="contact-card" href="mailto:ali@example.com">البريد الإلكتروني: ali@example.com</a>
+        <a class="contact-card" href="#" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="contact-card" href="#" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      صُمم بواسطة علي الحسن © 2026
+    </div>
+  </footer>
+
+  <script>
+    // simple reveal on scroll
+    const revealEls = document.querySelectorAll('.reveal');
+    const onScroll = () => {
+      revealEls.forEach(el => {
+        const r = el.getBoundingClientRect();
+        if (r.top < window.innerHeight - 60) el.classList.add('active');
+      });
+    };
+    window.addEventListener('scroll', onScroll);
+    onScroll();
+    // nav shadow on scroll
+    const nav = document.querySelector('nav');
+    window.addEventListener('scroll', () => {
+      nav.style.boxShadow = window.scrollY > 30 ? '0 6px 18px rgba(15,23,36,0.06)' : 'none';
+    });
+  </script>
+</body>
+</html>
