@@ -5,7 +5,7 @@
   "description": "صَدَى (Sada) — منصة وكلاء الذكاء الاصطناعي للنشر التلقائي الذكي على منصات التواصل",
   "scripts": {
     "dev": "next dev",
-    "build": "prisma db push && prisma generate && next build",
+    "build": "prisma migrate deploy && prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
     "db:push": "prisma db push",

@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "mustakhdimun" ADD COLUMN "dawr" TEXT NOT NULL DEFAULT 'MUSTAKHDIM';
