@@ -11,7 +11,7 @@ generator client {
 datasource db {
   // SQLite محلياً، PostgreSQL في الإنتاج (Neon على Vercel).
   // غيّر DATABASE_URL إلى رابط Neon وسوي prisma generate.
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
