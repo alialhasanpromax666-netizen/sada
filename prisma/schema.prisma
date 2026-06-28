@@ -11,7 +11,7 @@ generator client {
 datasource db {
   // SQLite محلياً، PostgreSQL في الإنتاج (Neon على Vercel).
   // غيّر DATABASE_URL إلى رابط Neon وسوي prisma generate.
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -21,6 +21,7 @@ model Mustakhdim {
   email     String   @unique
   ism       String // الاسم
   kalimaSirr String? // كلمة السر (مشفّرة بـ bcrypt، null يعني لم تُضبط بعد)
+  dawr      String   @default("MUSTAKHDIM") // الدور: MUSTAKHDIM | ADIM
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

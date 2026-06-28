@@ -36,6 +36,10 @@ const RAWABIT: { href: string; ism: string; Ayquna: (p: { className?: string }) 
   { href: "/idadat", ism: "الإعدادات", Ayquna: AyqunaIdadat },
 ];
 
+const RAWABIT_ADMIN: { href: string; ism: string; Ayquna: (p: { className?: string }) => ReactNode }[] = [
+  { href: "/admin", ism: "لوحة الأدمين", Ayquna: AyqunaLawha },
+];
+
 const LAWN_NAW3: Record<IshaarHayy["naw3"], string> = {
   NAJAH: "border-sada/40 bg-sada/10 text-sada-soft",
   KHATA: "border-rose-500/40 bg-rose-500/10 text-rose-300",
@@ -43,7 +47,7 @@ const LAWN_NAW3: Record<IshaarHayy["naw3"], string> = {
   MA3LUMA: "border-aql/40 bg-aql/10 text-aql",
 };
 
-function TanaqulRawabit({ masar }: { masar: string }) {
+function TanaqulRawabit({ masar, dawr }: { masar: string; dawr?: string }) {
   return (
     <nav className="flex flex-col gap-1">
       {RAWABIT.map((r) => {
@@ -63,6 +67,23 @@ function TanaqulRawabit({ masar }: { masar: string }) {
           </Link>
         );
       })}
+      {dawr === "ADIM" && RAWABIT_ADMIN.map((r) => {
+        const nashit = masar === r.href;
+        return (
+          <Link
+            key={r.href}
+            href={r.href}
+            className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
+              nashit
+                ? "bg-wameed/15 text-wameed-soft shadow-glow"
+                : "text-wameed hover:bg-wameed/10 hover:text-wameed-soft"
+            }`}
+          >
+            <r.Ayquna className="h-5 w-5 shrink-0" />
+            {r.ism}
+          </Link>
+        );
+      })}
     </nav>
   );
 }
@@ -74,6 +95,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
   const [ghayrMaqru, setGhayrMaqru] = useState(0);
   const [hayy, setHayy] = useState(false);
   const [qaimaMaftuha, setQaimaMaftuha] = useState(false);
+  const [dawr, setDawr] = useState<string>("MUSTAKHDIM");
 
   const izalaToast = useCallback((id: string) => {
     setToasts((t) => t.filter((x) => x.id !== id));
@@ -83,6 +105,13 @@ export function Shell({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setQaimaMaftuha(false);
   }, [masar]);
+
+  useEffect(() => {
+    fetch("/api/mustakhdim/dawr")
+      .then((r) => r.json())
+      .then((d) => setDawr(d.dawr ?? "MUSTAKHDIM"))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     fetch("/api/isharat")
@@ -145,9 +174,19 @@ export function Shell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
 
-        <TanaqulRawabit masar={masar} />
+        <TanaqulRawabit masar={masar} dawr={dawr} />
 
         <div className="mt-auto space-y-2">
+          {/* رابط تيليغرام */}
+          <a
+            href="https://t.me/blueprint_cha"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 rounded-xl border border-sada/30 bg-sada/10 px-3 py-2.5 text-sm font-medium text-sada-soft transition hover:bg-sada/20"
+          >
+            <AyqunaManassa ramz="TELEGRAM" className="h-5 w-5 shrink-0" />
+            تابعنا على تيليغرام
+          </a>
           {/* اسم المستخدم */}
           <div className="rounded-xl border border-white/10 bg-layli-900/60 p-3 text-xs text-slate-400">
             <div className="flex items-center gap-2">
@@ -200,9 +239,19 @@ export function Shell({ children }: { children: React.ReactNode }) {
               </button>
             </div>
 
-            <TanaqulRawabit masar={masar} />
+            <TanaqulRawabit masar={masar} dawr={dawr} />
 
             <div className="mt-auto space-y-2">
+              {/* رابط تيليغرام */}
+              <a
+                href="https://t.me/blueprint_cha"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 rounded-xl border border-sada/30 bg-sada/10 px-3 py-2.5 text-sm font-medium text-sada-soft transition hover:bg-sada/20"
+              >
+                <AyqunaManassa ramz="TELEGRAM" className="h-5 w-5 shrink-0" />
+                تابعنا على تيليغرام
+              </a>
               <div className="rounded-xl border border-white/10 bg-layli-900/60 p-3 text-xs text-slate-400">
                 <div className="flex items-center gap-2">
                   <span
