@@ -21,7 +21,6 @@ model Mustakhdim {
   email     String   @unique
   ism       String // الاسم
   kalimaSirr String? // كلمة السر (مشفّرة بـ bcrypt، null يعني لم تُضبط بعد)
-  dawr      String   @default("MUSTAKHDIM") // الدور: MUSTAKHDIM | ADIM
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

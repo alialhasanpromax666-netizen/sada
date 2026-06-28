@@ -14,8 +14,8 @@ export async function GET() {
     const m = await jalbMustakhdimHali();
     
     // التحقق من صلاحية الأدمين
-    const dawr = (m as Record<string, unknown>).dawr;
-    if (dawr !== "ADIM") {
+    const adminEmails = (process.env.ADMIN_EMAILS ?? "").split(",").map(s => s.trim());
+    if (!adminEmails.includes(m.email)) {
       return NextResponse.json(
         { khata: "غير مصرّح. هذه الواجهة للأدمين فقط." },
         { status: 403 },
@@ -62,7 +62,7 @@ export async function GET() {
           id: mu.id,
           ism: mu.ism,
           email: mu.email,
-          dawr: "MUSTAKHDIM",
+          dawr: adminEmails.includes(mu.email) ? "ADIM" : "MUSTAKHDIM",
           createdAt: mu.createdAt.toISOString(),
           adadWukala: mu._count.wukala,
           adadManshurat,
