@@ -14,7 +14,8 @@ export async function GET() {
     const m = await jalbMustakhdimHali();
     
     // التحقق من صلاحية الأدمين
-    if (m.dawr !== "ADIM") {
+    const dawr = (m as Record<string, unknown>).dawr;
+    if (dawr !== "ADIM") {
       return NextResponse.json(
         { khata: "غير مصرّح. هذه الواجهة للأدمين فقط." },
         { status: 403 },
@@ -40,7 +41,6 @@ export async function GET() {
           id: true,
           ism: true,
           email: true,
-          dawr: true,
           createdAt: true,
           _count: {
             select: {
@@ -62,7 +62,7 @@ export async function GET() {
           id: mu.id,
           ism: mu.ism,
           email: mu.email,
-          dawr: mu.dawr,
+          dawr: "MUSTAKHDIM",
           createdAt: mu.createdAt.toISOString(),
           adadWukala: mu._count.wukala,
           adadManshurat,

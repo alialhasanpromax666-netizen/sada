@@ -110,7 +110,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
     fetch("/api/mustakhdim/dawr")
       .then((r) => r.json())
       .then((d) => setDawr(d.dawr ?? "MUSTAKHDIM"))
-      .catch(() => {});
+      .catch(() => setDawr("MUSTAKHDIM"));
   }, []);
 
   useEffect(() => {

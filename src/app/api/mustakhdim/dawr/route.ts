@@ -11,7 +11,7 @@ export const runtime = "nodejs";
 export async function GET() {
   try {
     const m = await jalbMustakhdimHali();
-    return NextResponse.json({ dawr: m.dawr ?? "MUSTAKHDIM" });
+    return NextResponse.json({ dawr: (m as Record<string, unknown>).dawr ?? "MUSTAKHDIM" });
   } catch {
     return NextResponse.json({ dawr: "MUSTAKHDIM" });
   }

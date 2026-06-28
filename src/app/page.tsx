@@ -24,7 +24,16 @@ function raqamMukhtasar(n: number): string {
 }
 
 export default async function Dashboard() {
-  const m = await jalbMustakhdimHali();
+  let m;
+  try {
+    m = await jalbMustakhdimHali();
+  } catch {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <p className="text-slate-400">جاري التحميل...</p>
+      </div>
+    );
+  }
 
   const [wukala, manshurat, tahlilat] = await Promise.all([
     db.wakeel.findMany({
